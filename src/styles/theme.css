@@ -225,6 +225,85 @@ body {
   border-color: var(--accent);
 }
 
+.word-search-input {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--panel-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 7px 10px;
+  font-size: 13px;
+  transition: border-color 0.15s;
+}
+.word-search-input::placeholder {
+  color: var(--muted);
+}
+.word-search-input:hover,
+.word-search-input:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+/* ---- Listado de mensajes del buscador de palabras ---- */
+.word-hits {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 440px;
+  overflow-y: auto;
+}
+.word-hit-row {
+  margin: 0;
+}
+.word-hit-open {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.word-hit-open:hover {
+  border-color: var(--accent);
+}
+.word-hit-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+.word-hit-author {
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 12px;
+}
+.word-hit-date {
+  color: var(--muted);
+  font-size: 11px;
+  white-space: nowrap;
+}
+.word-hit-text {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+mark.word-hit {
+  background: var(--accent);
+  color: #fff;
+  border-radius: 3px;
+  padding: 0 2px;
+}
+
 .field-block {
   margin: 10px 0;
 }
