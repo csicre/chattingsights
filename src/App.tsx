@@ -147,6 +147,11 @@ export function App() {
         <p style={{ margin: 0, color: 'var(--muted)', fontSize: 13 }}>
           🔒 {t('footer.privacy')}
         </p>
+        <p style={{ margin: '8px 0 0', fontSize: 13 }}>
+          <a href="/guia/analizar-chat-pareja.html" style={{ color: 'var(--muted)' }}>
+            {t('footer.guideCouple')}
+          </a>
+        </p>
       </footer>
 
       {toast && <div className="toast">{toast}</div>}

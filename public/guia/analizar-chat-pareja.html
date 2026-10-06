@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0f1420" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <title>Analizar el chat de WhatsApp con tu pareja: quién escribe más, quién inicia y tiempos de respuesta</title>
+    <meta
+      name="description"
+      content="Descubre qué dicen las estadísticas del WhatsApp de tu pareja: quién inicia más conversaciones, cómo evolucionan los tiempos de respuesta y en qué horas habláis más. Gratis y privado, sin que tus mensajes salgan del navegador."
+    />
+    <link rel="canonical" href="https://chattingsights.com/guia/analizar-chat-pareja.html" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="ChattingSights" />
+    <meta property="og:url" content="https://chattingsights.com/guia/analizar-chat-pareja.html" />
+    <meta property="og:title" content="Analizar el chat de WhatsApp con tu pareja: quién escribe más y quién inicia" />
+    <meta
+      property="og:description"
+      content="Quién inicia las conversaciones, cómo cambian los tiempos de respuesta y cuándo habláis más. Analiza tu chat de pareja gratis y en privado."
+    />
+    <meta property="og:image" content="https://chattingsights.com/og-image.png" />
+    <meta property="og:locale" content="es_ES" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Analizar el chat de WhatsApp con tu pareja" />
+    <meta
+      name="twitter:description"
+      content="Quién inicia, quién escribe más y cómo evolucionan los tiempos de respuesta. Gratis y privado."
+    />
+    <meta name="twitter:image" content="https://chattingsights.com/og-image.png" />
+
+    <!-- Datos estructurados: artículo + preguntas frecuentes -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Analizar el chat de WhatsApp con tu pareja: quién escribe más, quién inicia y tiempos de respuesta",
+        "description": "Guía para interpretar las estadísticas de una conversación de pareja en WhatsApp: iniciativa, tiempos de respuesta, actividad por horas y emojis.",
+        "inLanguage": "es",
+        "mainEntityOfPage": "https://chattingsights.com/guia/analizar-chat-pareja.html",
+        "author": { "@type": "Organization", "name": "ChattingSights" },
+        "publisher": { "@type": "Organization", "name": "ChattingSights" }
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "¿Es privado analizar el chat de mi pareja?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Sí. En ChattingSights todo el análisis ocurre dentro de tu navegador. El archivo del chat no se sube a ningún servidor ni se guarda: tus mensajes no salen de tu dispositivo."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Qué puedo saber del chat con mi pareja?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Quién inicia más las conversaciones, el tiempo medio de respuesta de cada persona y cómo evoluciona, las horas y días con más actividad, los emojis más usados y la cantidad de mensajes y palabras de cada uno."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Necesito instalar algo?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. Solo necesitas exportar la conversación desde WhatsApp como archivo .txt y subirla en la web. Funciona desde el navegador, sin instalar aplicaciones."
+            }
+          }
+        ]
+      }
+    </script>
+
+    <style>
+      :root {
+        --bg: #0f1420;
+        --surface: #182031;
+        --text: #e6ebf5;
+        --muted: #8b97ad;
+        --green: #25d366;
+        --border: #2a3651;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.65;
+        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      }
+      .wrap { max-width: 760px; margin: 0 auto; padding: 24px 20px 64px; }
+      header.site {
+        display: flex; align-items: center; gap: 10px;
+        padding: 16px 0; font-weight: 700;
+      }
+      header.site img { display: block; }
+      a { color: var(--green); }
+      h1 { font-size: clamp(28px, 5vw, 40px); line-height: 1.2; margin: 24px 0 8px; }
+      h2 { font-size: 24px; margin: 40px 0 10px; }
+      h3 { font-size: 19px; margin: 28px 0 6px; }
+      p, li { color: #d4dbea; }
+      .lead { font-size: 19px; color: var(--muted); }
+      .muted { color: var(--muted); }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 18px 20px;
+        margin: 20px 0;
+      }
+      .cta {
+        display: inline-block;
+        background: var(--green);
+        color: #04210f;
+        font-weight: 700;
+        text-decoration: none;
+        padding: 14px 28px;
+        border-radius: 999px;
+        margin: 8px 0;
+      }
+      .cta-wrap { text-align: center; margin: 36px 0; }
+      ol.steps li { margin-bottom: 8px; }
+      .note {
+        border-left: 3px solid var(--green);
+        padding: 4px 0 4px 16px;
+        color: var(--muted);
+        font-size: 15px;
+      }
+      footer.site {
+        border-top: 1px solid var(--border);
+        margin-top: 48px; padding-top: 20px;
+        color: var(--muted); font-size: 14px;
+      }
+      details { border-bottom: 1px solid var(--border); padding: 12px 0; }
+      summary { cursor: pointer; font-weight: 600; }
+      details p { margin: 10px 0 0; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="site">
+        <img src="/favicon.svg" width="32" height="32" alt="ChattingSights" />
+        <span>ChattingSights</span>
+      </header>
+
+      <article>
+        <h1>Qué dice vuestro WhatsApp: analiza el chat con tu pareja</h1>
+        <p class="lead">
+          Quién escribe primero cada mañana, quién tarda más en contestar, a qué
+          horas habláis de verdad. La conversación con tu pareja guarda patrones
+          curiosos, y puedes verlos con datos en lugar de suposiciones. Aquí te
+          explicamos qué puedes medir y cómo hacerlo gratis, sin que tus mensajes
+          salgan de tu dispositivo.
+        </p>
+
+        <div class="cta-wrap">
+          <a class="cta" href="/">Analizar nuestro chat gratis →</a>
+          <p class="muted" style="font-size: 14px">Se procesa en tu navegador · sin registro</p>
+        </div>
+
+        <h2>Qué puedes descubrir del chat con tu pareja</h2>
+        <p>
+          Un export de WhatsApp es, en el fondo, un registro con fecha y hora de
+          cada mensaje. A partir de ahí se pueden calcular métricas objetivas que
+          cuentan cómo os comunicáis. Estas son las más interesantes para una
+          pareja.
+        </p>
+
+        <h3>1. Quién inicia las conversaciones</h3>
+        <p>
+          Una de las métricas más reveladoras: cuántas veces es cada persona quien
+          rompe el silencio y escribe el primer mensaje después de un rato sin
+          hablar. En ChattingSights lo verás en el apartado
+          <strong>«Quién inicia las conversaciones»</strong>, con el número y el
+          porcentaje de cada uno. No hay un reparto «correcto»: lo interesante es
+          verlo, porque casi nunca coincide con lo que uno cree.
+        </p>
+
+        <h3>2. Cómo evolucionan los tiempos de respuesta</h3>
+        <p>
+          El <strong>tiempo de respuesta medio</strong> mide cuánto tarda cada
+          persona en contestar a la otra. Pero lo jugoso no es el número suelto,
+          sino su evolución en el tiempo: ¿respondéis más rápido los fines de
+          semana?, ¿ha cambiado la cadencia a lo largo de los meses? La gráfica de
+          evolución deja ver esas tendencias de un vistazo.
+        </p>
+
+        <h3>3. A qué horas y qué días habláis más</h3>
+        <p>
+          El reparto de mensajes por hora del día y por día de la semana dibuja
+          vuestra rutina: si sois de buenos días madrugadores, de hablar a mediodía
+          o de conversaciones nocturnas. Es uno de los datos más visuales y
+          compartibles.
+        </p>
+
+        <h3>4. Equilibrio de mensajes, palabras y emojis</h3>
+        <p>
+          Cuántos mensajes y palabras aporta cada uno, y quién usa más emojis (y
+          cuáles). Da una foto rápida de los estilos: quien manda mensajes largos
+          frente a quien contesta corto, quien pone muchos emojis frente a quien
+          casi ninguno.
+        </p>
+
+        <div class="note">
+          Esto son estadísticas de comunicación, pensadas como curiosidad y
+          autoconocimiento. No son un test de relación ni un diagnóstico de ningún
+          tipo: solo describen cómo se reparten los mensajes.
+        </div>
+
+        <h2>Cómo exportar el chat de WhatsApp (paso a paso)</h2>
+        <p>Tarda un par de minutos y funciona igual en Android y iPhone.</p>
+        <ol class="steps">
+          <li>Abre la conversación con tu pareja en WhatsApp.</li>
+          <li>Entra en el menú del chat (los tres puntos en Android, o el nombre del contacto en iPhone).</li>
+          <li>Elige <strong>«Exportar chat»</strong>.</li>
+          <li>Selecciona <strong>«Sin archivos multimedia»</strong>: solo necesitas el texto.</li>
+          <li>Guarda el archivo <strong>.txt</strong> y súbelo en ChattingSights.</li>
+        </ol>
+
+        <div class="card">
+          <strong>100% privado.</strong>
+          <p style="margin: 6px 0 0">
+            El análisis ocurre dentro de tu navegador. El archivo no se sube a
+            ningún servidor ni se almacena: tus conversaciones no salen de tu
+            dispositivo. Puedes comprobarlo tú mismo analizando sin conexión una vez
+            cargada la página.
+          </p>
+        </div>
+
+        <div class="cta-wrap">
+          <a class="cta" href="/">Subir nuestro chat y ver el informe →</a>
+        </div>
+
+        <h2>Preguntas frecuentes</h2>
+        <details>
+          <summary>¿Es privado analizar el chat de mi pareja?</summary>
+          <p>
+            Sí. Todo el análisis se hace en tu navegador. El archivo del chat no se
+            sube a ningún servidor ni se guarda, así que tus mensajes no salen de tu
+            dispositivo.
+          </p>
+        </details>
+        <details>
+          <summary>¿Qué puedo saber del chat con mi pareja?</summary>
+          <p>
+            Quién inicia más las conversaciones, el tiempo medio de respuesta de
+            cada persona y cómo evoluciona, las horas y días con más actividad, los
+            emojis más usados y el reparto de mensajes y palabras.
+          </p>
+        </details>
+        <details>
+          <summary>¿Necesito instalar algo o registrarme?</summary>
+          <p>
+            No. Solo exportas la conversación como archivo .txt y la subes en la web.
+            No hace falta instalar aplicaciones ni crear una cuenta.
+          </p>
+        </details>
+        <details>
+          <summary>¿Funciona con cualquier idioma?</summary>
+          <p>
+            Sí. El análisis de actividad, horarios, iniciativa y tiempos de respuesta
+            funciona con cualquier idioma, ya que se basa en las marcas de tiempo y
+            los autores de los mensajes.
+          </p>
+        </details>
+      </article>
+
+      <footer class="site">
+        <p>
+          <a href="/">ChattingSights</a> — analiza tus chats de WhatsApp con
+          privacidad total. Tus datos nunca salen de tu navegador.
+        </p>
+      </footer>
+    </div>
+  </body>
+</html>
