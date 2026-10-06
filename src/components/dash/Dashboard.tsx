@@ -18,17 +18,16 @@ import { formatDate, formatNumber } from '@/core/format';
 import type { ChatFilters, SeriesSplit, TimeGroup } from '@/core/types';
 import { FiltersPanel } from './FiltersPanel';
 import { KpiStrip, type KpiItem } from './KpiStrip';
-import { ScatterPlot } from './ScatterPlot';
-import { ScatterTemporal } from './ScatterTemporal';
 import { HourHistogram } from './HourHistogram';
 import { WeekdayBars } from './WeekdayBars';
 import { TrendPanel } from './TrendPanel';
 import { InitiativeBars } from './InitiativeBars';
 import { ResponseBars } from './ResponseBars';
 import { EmojiBars } from './EmojiBars';
+import { WordSearchPanel } from './WordSearchPanel';
 import { Tabs, type TabItem } from './Tabs';
 
-type TabId = 'general' | 'schedule' | 'emojis' | 'response' | 'initiative';
+type TabId = 'general' | 'schedule' | 'emojis' | 'response' | 'initiative' | 'words';
 
 /** Opciones de hueco de inactividad (minutos) para separar conversaciones. */
 const INITIATIVE_GAP_OPTIONS = [30, 60, 120, 240] as const;
@@ -41,7 +40,7 @@ const INITIATIVE_GAP_OPTIONS = [30, 60, 120, 240] as const;
  */
 export function Dashboard() {
   const { t } = useTranslation();
-  const { parsed, report, setSelectedMessageId } = useApp();
+  const { parsed, report } = useApp();
 
   const [filters, setFiltersState] = useState<ChatFilters>(EMPTY_FILTERS);
   const [timeGroup, setTimeGroup] = useState<TimeGroup>('day');
@@ -110,6 +109,7 @@ export function Dashboard() {
     { id: 'emojis', label: t('tabs.emojis') },
     { id: 'response', label: t('tabs.response') },
     { id: 'initiative', label: t('tabs.initiative') },
+    { id: 'words', label: t('tabs.words') },
   ];
 
   // KPIs de la solapa General.
@@ -133,6 +133,13 @@ export function Dashboard() {
       value: formatNumber(genKpis.messagesPerDay, lang),
       label: t('report.avgPerDay'),
       info: t('kpi.perDay.info'),
+    },
+    {
+      value: `${genKpis.avgWords.toLocaleString(lang === 'es' ? 'es-ES' : 'en-US', {
+        maximumFractionDigits: 1,
+      })} ${t('dash.wordsUnit')}`,
+      label: t('kpi.avgWords'),
+      info: t('kpi.avgWords.info'),
     },
   ];
 
@@ -185,13 +192,6 @@ export function Dashboard() {
         ) : tab === 'general' ? (
           <>
             <KpiStrip items={generalKpis} />
-            <ScatterTemporal
-              points={points}
-              categories={categories}
-              timeGroup={timeGroup}
-              split={split}
-              onPointClick={(id) => setSelectedMessageId(id)}
-            />
             <div className="aux-row">
               <TrendPanel
                 series={countSeries}
@@ -215,11 +215,6 @@ export function Dashboard() {
           </>
         ) : tab === 'schedule' ? (
           <>
-            <ScatterPlot
-              points={points}
-              categories={authorCategories}
-              onPointClick={(p) => setSelectedMessageId(p.id)}
-            />
             <div className="aux-row">
               <HourHistogram points={points} />
               <WeekdayBars points={points} />
@@ -270,6 +265,13 @@ export function Dashboard() {
               />
             </div>
           </>
+        ) : tab === 'words' ? (
+          <WordSearchPanel
+            points={points}
+            categories={categories}
+            timeGroup={timeGroup}
+            split={split}
+          />
         ) : (
           <>
             <div className="group">

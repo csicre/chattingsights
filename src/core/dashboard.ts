@@ -20,7 +20,8 @@ import type {
   TimeGroup,
   TrendSeries,
 } from './types';
-import { charCount, extractEmojis, tokenize } from './text';
+import { charCount, countMatches, extractEmojis, findMatches, tokenize } from './text';
+import type { MatchRange } from './text';
 
 function pad(n: number): string {
   return n < 10 ? `0${n}` : `${n}`;
@@ -240,6 +241,153 @@ export function buildTrendSeries(
 }
 
 /**
+ * Normaliza un término de búsqueda para mostrarlo (minúsculas y recortado).
+ * El conteo real usa `countMatches` (insensible a mayúsculas y tildes).
+ */
+export function normalizeSearchTerm(term: string): string {
+  return term.trim().toLowerCase();
+}
+
+/**
+ * Serie temporal de la FRECUENCIA DE UNA EXPRESIÓN por periodo.
+ *
+ * Cuenta cuántas veces aparece el término buscado en los mensajes de cada
+ * periodo, mediante coincidencia de subcadena insensible a mayúsculas y a
+ * tildes. Admite CUALQUIER expresión escrita por el usuario, incluidas varias
+ * palabras con espacios (p. ej. "buenos días"). Respeta la agrupación temporal
+ * (`group`) y el criterio de división de la leyenda (`split`).
+ *
+ * Si el término está vacío, devuelve una lista vacía de series.
+ *
+ * @param term expresión a buscar.
+ */
+export function buildWordTrend(
+  points: MessagePoint[],
+  group: TimeGroup,
+  split: SeriesSplit,
+  term: string,
+): TrendSeries[] {
+  if (!term.trim()) return [];
+
+  // Mapa serieKey -> (bucketTime -> nº de apariciones)
+  const bySeries = new Map<string, Map<number, number>>();
+
+  for (const p of points) {
+    const occurrences = countMatches(p.text, term);
+    if (occurrences === 0) continue;
+
+    const key = seriesKeyOf(p, split);
+    const bt = bucketStart(p.timestamp, group).getTime();
+    let buckets = bySeries.get(key);
+    if (!buckets) {
+      buckets = new Map();
+      bySeries.set(key, buckets);
+    }
+    buckets.set(bt, (buckets.get(bt) ?? 0) + occurrences);
+  }
+
+  const series: TrendSeries[] = [];
+  for (const [key, buckets] of bySeries) {
+    const sorted = Array.from(buckets.entries()).sort((a, b) => a[0] - b[0]);
+    series.push({
+      key,
+      points: sorted.map(([bt, count]) => ({ t: new Date(bt), value: count })),
+    });
+  }
+  sortSeries(series, split);
+  return series;
+}
+
+/** Una barra del diagrama del buscador de palabras (una por serie). */
+export interface WordBar {
+  /** Clave de la serie (autor, día de semana o 'all'). */
+  key: string;
+  /** Nº total de apariciones de la palabra en esa serie. */
+  count: number;
+}
+
+/**
+ * Barras del nº TOTAL de apariciones de una palabra por serie (según la
+ * leyenda). Mismo criterio de conteo que `buildWordTrend` pero sin agrupar por
+ * periodo: suma todas las apariciones de cada categoría.
+ *
+ * @param term palabra a buscar (se normaliza internamente).
+ */
+export function buildWordBars(
+  points: MessagePoint[],
+  split: SeriesSplit,
+  term: string,
+): WordBar[] {
+  if (!term.trim()) return [];
+
+  const bySeries = new Map<string, number>();
+
+  for (const p of points) {
+    const occurrences = countMatches(p.text, term);
+    if (occurrences === 0) continue;
+    const key = seriesKeyOf(p, split);
+    bySeries.set(key, (bySeries.get(key) ?? 0) + occurrences);
+  }
+
+  const bars: WordBar[] = Array.from(bySeries.entries()).map(([key, count]) => ({ key, count }));
+  sortBars(bars, split);
+  return bars;
+}
+
+/** Un mensaje donde aparece la expresión buscada, con los rangos a resaltar. */
+export interface WordMatch {
+  /** Id estable del mensaje (índice en el chat parseado). */
+  id: number;
+  timestamp: Date;
+  author: string;
+  text: string;
+  /** Nº de apariciones de la expresión en este mensaje. */
+  occurrences: number;
+  /** Rangos [start,end) sobre `text` donde aparece la expresión. */
+  ranges: MatchRange[];
+}
+
+/**
+ * Lista de mensajes donde aparece la expresión buscada, ordenados
+ * cronológicamente, con los rangos de coincidencia para resaltarla. Misma
+ * semántica de coincidencia que `buildWordTrend`/`buildWordBars`.
+ *
+ * @param term expresión a buscar.
+ * @param limit nº máximo de mensajes a devolver (para no saturar la UI).
+ */
+export function buildWordMatches(
+  points: MessagePoint[],
+  term: string,
+  limit = 200,
+): { matches: WordMatch[]; totalMessages: number; totalOccurrences: number } {
+  if (!term.trim()) return { matches: [], totalMessages: 0, totalOccurrences: 0 };
+
+  const all: WordMatch[] = [];
+  let totalOccurrences = 0;
+
+  for (const p of points) {
+    const ranges = findMatches(p.text, term);
+    if (ranges.length === 0) continue;
+    totalOccurrences += ranges.length;
+    all.push({
+      id: p.id,
+      timestamp: p.timestamp,
+      author: p.author,
+      text: p.text,
+      occurrences: ranges.length,
+      ranges,
+    });
+  }
+
+  all.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+  return {
+    matches: all.slice(0, limit),
+    totalMessages: all.length,
+    totalOccurrences,
+  };
+}
+
+/**
  * Serie temporal del TIEMPO DE RESPUESTA medio por periodo.
  *
  * Un "tiempo de respuesta" es el hueco (en segundos) entre un mensaje y el
@@ -359,8 +507,8 @@ export function buildResponseBars(
 }
 
 /** Ordena las barras según el criterio de división (día de semana en orden
- *  natural; el resto, alfabético por clave). */
-function sortBars(bars: ResponseBar[], split: SeriesSplit): void {
+ *  natural; el resto, alfabético por clave). Genérico: solo necesita `key`. */
+function sortBars<T extends { key: string }>(bars: T[], split: SeriesSplit): void {
   if (split === 'weekday') {
     const idx = (k: string) => WEEKDAY_KEYS.indexOf(k as (typeof WEEKDAY_KEYS)[number]);
     bars.sort((a, b) => idx(a.key) - idx(b.key));
@@ -375,6 +523,8 @@ export interface DashboardKpis {
   words: number;
   avgLength: number;
   messagesPerDay: number;
+  /** Media de palabras por mensaje (tamaño medio del mensaje). */
+  avgWords: number;
   topAuthor: string;
   busiestHour: number;
 }
@@ -387,6 +537,7 @@ export function computeDashboardKpis(points: MessagePoint[]): DashboardKpis {
       words: 0,
       avgLength: 0,
       messagesPerDay: 0,
+      avgWords: 0,
       topAuthor: '—',
       busiestHour: 0,
     };
@@ -429,6 +580,7 @@ export function computeDashboardKpis(points: MessagePoint[]): DashboardKpis {
     words,
     avgLength: totalLength / points.length,
     messagesPerDay: points.length / Math.max(1, days.size),
+    avgWords: words / points.length,
     topAuthor,
     busiestHour,
   };
