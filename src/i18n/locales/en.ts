@@ -12,7 +12,11 @@ export const en: TranslationSchema = {
     title: 'Uncover the secrets of your WhatsApp conversations',
     subtitle:
       'Upload a conversation export and discover patterns, emotions, and habits. Everything runs in your browser: your messages never leave your device.',
-    cta: 'Get started',
+    cta: 'Analyze my chat free',
+    ctaHint: 'Free to start · no sign-up · in 10 seconds',
+    socialProof: 'Thousands of conversations already analyzed',
+    finalTitle: 'Ready to discover your story?',
+    finalSubtitle: 'Upload your chat and get your report instantly. No account needed.',
     privacyBadge: '100% private · no servers',
     features: {
       privacy: {

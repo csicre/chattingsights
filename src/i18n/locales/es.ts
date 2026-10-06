@@ -10,7 +10,11 @@ export const es = {
     title: 'Descubre los secretos de tus conversaciones de WhatsApp',
     subtitle:
       'Sube el export de una conversación y descubre patrones, emociones y hábitos. Todo se procesa en tu navegador: tus mensajes nunca salen de tu dispositivo.',
-    cta: 'Empezar ahora',
+    cta: 'Analizar mi chat gratis',
+    ctaHint: 'Gratis para empezar · sin registro · en 10 segundos',
+    socialProof: 'Miles de conversaciones ya analizadas',
+    finalTitle: '¿List@ para descubrir tu historia?',
+    finalSubtitle: 'Sube tu chat y obtén tu informe al instante. Sin crear cuenta.',
     privacyBadge: '100% privado · sin servidores',
     features: {
       privacy: {

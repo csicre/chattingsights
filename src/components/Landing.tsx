@@ -69,15 +69,23 @@ export function Landing({ onStart }: LandingProps) {
       <div className="hero">
         <div className="hero-privacy">
           <span className="badge">{t('landing.privacyBadge')}</span>
-          <span className="badge">{t('footer.privacy')}</span>
         </div>
         <h1 style={{ marginTop: 16 }}>{t('landing.title')}</h1>
         <p>{t('landing.subtitle')}</p>
-        <button className="btn btn-primary" onClick={onStart}>
-          {t('landing.cta')} →
-        </button>
+
+        {/* CTA único y dominante: la única acción de la página. */}
+        <div className="hero-cta">
+          <button className="btn btn-primary btn-cta" onClick={onStart}>
+            {t('landing.cta')} →
+          </button>
+          <span className="cta-hint">{t('landing.ctaHint')}</span>
+        </div>
+
+        <p className="social-proof">★★★★★ {t('landing.socialProof')}</p>
       </div>
 
+      {/* Las features no son acciones alternativas: solo refuerzan el valor
+          del único CTA. Son estáticas (no clicables) para no dividir el foco. */}
       <div className="features">
         {features.map((key) => {
           const Icon = FEATURE_ICON[key];
@@ -93,6 +101,19 @@ export function Landing({ onStart }: LandingProps) {
             </div>
           );
         })}
+      </div>
+
+      {/* Cierre: repetimos EXACTAMENTE el mismo CTA, no una acción distinta,
+          para captar a quien ha bajado leyendo las features. */}
+      <div className="hero final-cta">
+        <h2 style={{ margin: 0 }}>{t('landing.finalTitle')}</h2>
+        <p style={{ marginTop: 8 }}>{t('landing.finalSubtitle')}</p>
+        <div className="hero-cta">
+          <button className="btn btn-primary btn-cta" onClick={onStart}>
+            {t('landing.cta')} →
+          </button>
+          <span className="cta-hint">{t('landing.ctaHint')}</span>
+        </div>
       </div>
     </section>
   );

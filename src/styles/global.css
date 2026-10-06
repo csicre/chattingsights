@@ -169,6 +169,57 @@ button {
   font-size: 18px;
 }
 
+/* CTA único y dominante */
+.hero-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-cta {
+  padding: 18px 40px;
+  font-size: 18px;
+  box-shadow: 0 8px 24px rgba(37, 211, 102, 0.35);
+  animation: cta-pulse 2.4s ease-in-out infinite;
+}
+
+.btn-cta:hover {
+  box-shadow: 0 10px 30px rgba(37, 211, 102, 0.5);
+}
+
+@keyframes cta-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.03);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-cta {
+    animation: none;
+  }
+}
+
+.cta-hint {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.social-proof {
+  margin-top: 20px !important;
+  font-size: 15px !important;
+  color: var(--wa-green) !important;
+  font-weight: 600;
+}
+
+.final-cta {
+  padding: 32px 0 48px;
+}
+
 .features {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
