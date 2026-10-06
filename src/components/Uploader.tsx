@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { parseWhatsAppChat } from '@/core/parser';
 import { analyzeChat } from '@/core/analyzer';
 import { useApp } from '@/state/AppContext';
+import { trackEvent } from '@/services/analytics';
 
 export function Uploader() {
   const { t } = useTranslation();
@@ -16,18 +17,25 @@ export function Uploader() {
     async (file: File) => {
       setError(null);
       setBusy(true);
+      // Paso del funnel: el usuario ha aportado un archivo (sin PII: no se
+      // envía el contenido, solo el hecho de que ha subido algo).
+      trackEvent('upload_chat');
       try {
         const text = await file.text();
         const parsed = parseWhatsAppChat(text);
         if (parsed.messages.length === 0) {
           setError(t('upload.errorEmpty'));
+          trackEvent('analysis_error', { reason: 'empty' });
           setBusy(false);
           return;
         }
         const report = analyzeChat(parsed);
         setAnalysis(parsed, report);
+        // Conversión clave del funnel gratuito: informe generado con éxito.
+        trackEvent('analysis_success', { messages: report.totalMessages });
       } catch {
         setError(t('upload.errorFormat'));
+        trackEvent('analysis_error', { reason: 'parse' });
       } finally {
         setBusy(false);
       }

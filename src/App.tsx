@@ -75,11 +75,18 @@ export function App() {
     trackEvent('view_example');
   };
 
+  // Entra al flujo de subir un chat desde la landing (CTA principal).
+  const startUpload = () => {
+    trackEvent('start_upload', { from: 'landing' });
+    setView('upload');
+  };
+
   // Sale del ejemplo y lleva al flujo real de subir un chat.
   const startFromExample = () => {
     reset();
     setExampleMode(false);
     setView('upload');
+    trackEvent('start_upload', { from: 'example' });
   };
 
   // Sale del ejemplo y vuelve a la landing.
@@ -104,7 +111,7 @@ export function App() {
   } else if (report) {
     content = selectedMessageId != null ? <MessageDetail /> : <Dashboard />;
   } else if (view === 'landing') {
-    content = <Landing onStart={() => setView('upload')} onSeeExample={showExample} />;
+    content = <Landing onStart={startUpload} onSeeExample={showExample} />;
   } else {
     content = <Uploader />;
   }
