@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 
 interface LandingProps {
   onStart: () => void;
+  onSeeExample: () => void;
 }
 
 const ICON_COLOR = '#25d366';
@@ -59,7 +60,7 @@ const FEATURE_ICON = {
   export: FileIcon,
 } as const;
 
-export function Landing({ onStart }: LandingProps) {
+export function Landing({ onStart, onSeeExample }: LandingProps) {
   const { t } = useTranslation();
 
   const features = ['privacy', 'insights', 'export'] as const;
@@ -79,6 +80,11 @@ export function Landing({ onStart }: LandingProps) {
             {t('landing.cta')} →
           </button>
           <span className="cta-hint">{t('landing.ctaHint')}</span>
+          {/* Enlace secundario discreto: no compite con el CTA principal,
+              pero deja ver el valor antes de subir nada (clave en tráfico frío). */}
+          <button type="button" className="link-secondary" onClick={onSeeExample}>
+            {t('landing.seeExample')}
+          </button>
         </div>
 
         <p className="social-proof">★★★★★ {t('landing.socialProof')}</p>

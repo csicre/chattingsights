@@ -4,6 +4,7 @@ import { useApp } from '@/state/AppContext';
 import { BarChart } from './charts/BarChart';
 import { WordCloud } from './charts/WordCloud';
 import { RadarChart, type RadarSeries } from './charts/RadarChart';
+import { InfoTip } from './dash/InfoTip';
 import { Paywall } from './Paywall';
 import { exportAsImage, exportAsPdf } from '@/services/exporter';
 import { formatDate, formatNumber } from '@/core/format';
@@ -63,13 +64,13 @@ export function Report() {
 
         {/* --- Secciones gratis (preview) --- */}
         <div className="report-grid">
-          <ChartCard title={t('report.sections.byHour')}>
+          <ChartCard title={t('report.sections.byHour')} info={t('report.info.byHour')}>
             <BarChart
               data={report.messagesByHour.map((b) => ({ label: b.key, value: b.count }))}
             />
           </ChartCard>
 
-          <ChartCard title={t('report.sections.byWeekday')}>
+          <ChartCard title={t('report.sections.byWeekday')} info={t('report.info.byWeekday')}>
             <BarChart
               color="#34B7F1"
               data={report.messagesByWeekday.map((b) => ({
@@ -82,7 +83,7 @@ export function Report() {
 
         {/* --- Secciones premium (gated) --- */}
         <Gated locked={!isUnlocked} lang={lang}>
-          <ChartCard title={t('report.sections.emojis')}>
+          <ChartCard title={t('report.sections.emojis')} info={t('report.info.emojis')}>
             {report.topEmojis.length ? (
               <BarChart
                 color="#f39c12"
@@ -97,7 +98,7 @@ export function Report() {
             )}
           </ChartCard>
 
-          <ChartCard title={t('report.sections.wordmap')}>
+          <ChartCard title={t('report.sections.wordmap')} info={t('report.info.wordmap')}>
             {report.topWords.length ? (
               <WordCloud words={report.topWords} />
             ) : (
@@ -106,16 +107,16 @@ export function Report() {
           </ChartCard>
 
           <div className="report-grid">
-            <ChartCard title={t('report.sections.sentiment')}>
+            <ChartCard title={t('report.sections.sentiment')} info={t('report.info.sentiment')}>
               <SentimentView report={report} />
             </ChartCard>
 
-            <ChartCard title={t('report.sections.authors')}>
+            <ChartCard title={t('report.sections.authors')} info={t('report.info.authors')}>
               <AuthorsView report={report} />
             </ChartCard>
           </div>
 
-          <ChartCard title={t('report.sections.responseTime')}>
+          <ChartCard title={t('report.sections.responseTime')} info={t('report.info.responseTime')}>
             <BarChart
               color="#9b59b6"
               data={report.authorStats.map((s) => ({
@@ -128,7 +129,7 @@ export function Report() {
             </p>
           </ChartCard>
 
-          <ChartCard title={t('report.sections.personality')}>
+          <ChartCard title={t('report.sections.personality')} info={t('report.info.personality')}>
             <PersonalityView report={report} />
           </ChartCard>
         </Gated>
@@ -150,7 +151,10 @@ function Overview({ report }: { report: AnalysisReport }) {
   ];
   return (
     <div className="card" style={{ marginTop: 20 }}>
-      <h3 className="section-title">{t('report.overview')}</h3>
+      <h3 className="section-title section-title-tip">
+        {t('report.overview')}
+        <InfoTip text={t('report.info.overview')} label={t('report.overview')} />
+      </h3>
       <div className="stat-grid">
         {stats.map((s) => (
           <div className="stat" key={s.label}>
@@ -163,10 +167,21 @@ function Overview({ report }: { report: AnalysisReport }) {
   );
 }
 
-function ChartCard({ title, children }: { title: string; children: ReactNode }) {
+function ChartCard({
+  title,
+  info,
+  children,
+}: {
+  title: string;
+  info?: string;
+  children: ReactNode;
+}) {
   return (
     <div className="card">
-      <h3 className="section-title">{title}</h3>
+      <h3 className="section-title section-title-tip">
+        {title}
+        {info && <InfoTip text={info} label={title} />}
+      </h3>
       {children}
     </div>
   );

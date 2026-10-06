@@ -220,11 +220,47 @@ button {
   padding: 32px 0 48px;
 }
 
+.link-secondary {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 14px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  padding: 4px;
+}
+
+.link-secondary:hover {
+  color: var(--wa-green);
+}
+
 .features {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 20px;
   margin: 40px 0;
+}
+
+/* Banner de informe de ejemplo (datos sintéticos) */
+.example-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  background: rgba(52, 183, 241, 0.1);
+  border: 1px solid rgba(52, 183, 241, 0.35);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin: 16px 0 20px;
+}
+
+/* Título de sección con icono de ayuda alineado al lado.
+   El estilo del propio icono (.info-tip) vive en theme.css. */
+.section-title-tip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 /* Dropzone */

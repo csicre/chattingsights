@@ -7,15 +7,21 @@ import { MessageDetail } from './components/dash/MessageDetail';
 import { SUPPORTED_UI_LANGUAGES } from './i18n';
 import { useApp } from './state/AppContext';
 import { clearCheckoutParams, readCheckoutReturn } from './services/checkout';
-import { trackPageView } from './services/analytics';
+import { trackPageView, trackEvent } from './services/analytics';
 import { ConsentBanner } from './components/ConsentBanner';
+import { ExampleBanner } from './components/ExampleBanner';
+import { buildDemoAnalysis } from './core/demoData';
+import type { SupportedLanguage } from './core/types';
 
 type View = 'landing' | 'upload';
 
 export function App() {
   const { t, i18n } = useTranslation();
-  const { report, unlock, selectedMessageId } = useApp();
+  const { report, setAnalysis, reset, unlock, selectedMessageId } = useApp();
   const [view, setView] = useState<View>('landing');
+  // Cuando es true, el `report` cargado es el chat de EJEMPLO (datos
+  // sintéticos), no un chat real del usuario: se muestra el Report con banner.
+  const [exampleMode, setExampleMode] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   // Se incrementa cuando el usuario acepta la analítica, para re-registrar la
   // vista actual una vez GA ya está cargado.
@@ -42,7 +48,10 @@ export function App() {
   useEffect(() => {
     let path = '/';
     let title = 'Landing';
-    if (report) {
+    if (report && exampleMode) {
+      path = '/ejemplo';
+      title = 'Informe de ejemplo';
+    } else if (report) {
       if (selectedMessageId != null) {
         path = '/mensaje';
         title = 'Detalle de mensaje';
@@ -55,14 +64,47 @@ export function App() {
       title = 'Subir chat';
     }
     trackPageView(path, title);
-  }, [report, selectedMessageId, view, consentTick]);
+  }, [report, exampleMode, selectedMessageId, view, consentTick]);
+
+  // Carga el chat de EJEMPLO (datos sintéticos) y muestra el Report con banner.
+  const showExample = () => {
+    const lang = (i18n.language.split('-')[0] as SupportedLanguage) === 'en' ? 'en' : 'es';
+    const { parsed, report: demoReport } = buildDemoAnalysis(lang);
+    setAnalysis(parsed, demoReport);
+    setExampleMode(true);
+    trackEvent('view_example');
+  };
+
+  // Sale del ejemplo y lleva al flujo real de subir un chat.
+  const startFromExample = () => {
+    reset();
+    setExampleMode(false);
+    setView('upload');
+  };
+
+  // Sale del ejemplo y vuelve a la landing.
+  const exitExample = () => {
+    reset();
+    setExampleMode(false);
+    setView('landing');
+  };
 
   // Decide qué vista principal mostrar.
   let content;
-  if (report) {
+  if (report && exampleMode) {
+    // En modo ejemplo el usuario navega EXACTAMENTE las mismas vistas que con un
+    // chat real (dashboard interactivo + detalle de mensaje), solo que con datos
+    // sintéticos. Un banner recuerda que es un ejemplo y ofrece empezar/salir.
+    content = (
+      <>
+        <ExampleBanner onStart={startFromExample} onExit={exitExample} />
+        {selectedMessageId != null ? <MessageDetail /> : <Dashboard />}
+      </>
+    );
+  } else if (report) {
     content = selectedMessageId != null ? <MessageDetail /> : <Dashboard />;
   } else if (view === 'landing') {
-    content = <Landing onStart={() => setView('upload')} />;
+    content = <Landing onStart={() => setView('upload')} onSeeExample={showExample} />;
   } else {
     content = <Uploader />;
   }
