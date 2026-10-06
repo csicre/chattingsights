@@ -32,6 +32,12 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          # ID de medición de GA4. Es público (se incrusta en el navegador),
+          # por eso se gestiona como "variable" del repo, no como secret.
+          # Si la variable no existe, el build funciona igual y la analítica
+          # queda desactivada.
+          VITE_GA_ID: ${{ vars.VITE_GA_ID }}
 
       - name: SPA fallback (copy index.html to 404.html)
         run: cp dist/index.html dist/404.html

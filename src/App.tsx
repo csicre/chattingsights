@@ -7,6 +7,7 @@ import { MessageDetail } from './components/dash/MessageDetail';
 import { SUPPORTED_UI_LANGUAGES } from './i18n';
 import { useApp } from './state/AppContext';
 import { clearCheckoutParams, readCheckoutReturn } from './services/checkout';
+import { trackPageView } from './services/analytics';
 
 type View = 'landing' | 'upload';
 
@@ -32,6 +33,26 @@ export function App() {
     return () => clearTimeout(id);
   }, [toast]);
 
+  // Vista de página virtual para GA4. La app es una SPA sin router: la URL no
+  // cambia, así que mapeamos cada estado a una ruta/título lógicos.
+  useEffect(() => {
+    let path = '/';
+    let title = 'Landing';
+    if (report) {
+      if (selectedMessageId != null) {
+        path = '/mensaje';
+        title = 'Detalle de mensaje';
+      } else {
+        path = '/dashboard';
+        title = 'Dashboard';
+      }
+    } else if (view === 'upload') {
+      path = '/subir';
+      title = 'Subir chat';
+    }
+    trackPageView(path, title);
+  }, [report, selectedMessageId, view]);
+
   // Decide qué vista principal mostrar.
   let content;
   if (report) {
@@ -41,6 +62,10 @@ export function App() {
   } else {
     content = <Uploader />;
   }
+
+  // En la landing mantenemos el header libre de distracciones para que el
+  // único CTA domine. El selector de idioma aparece a partir del uploader.
+  const isLanding = !report && view === 'landing';
 
   return (
     <div className="app">
@@ -52,20 +77,22 @@ export function App() {
             <small>{t('app.tagline')}</small>
           </span>
         </div>
-        <div className="header-actions">
-          <select
-            className="lang-select"
-            value={i18n.language.split('-')[0]}
-            onChange={(e) => i18n.changeLanguage(e.target.value)}
-            aria-label={t('nav.language')}
-          >
-            {SUPPORTED_UI_LANGUAGES.map((l) => (
-              <option key={l.code} value={l.code}>
-                {l.label}
-              </option>
-            ))}
-          </select>
-        </div>
+        {!isLanding && (
+          <div className="header-actions">
+            <select
+              className="lang-select"
+              value={i18n.language.split('-')[0]}
+              onChange={(e) => i18n.changeLanguage(e.target.value)}
+              aria-label={t('nav.language')}
+            >
+              {SUPPORTED_UI_LANGUAGES.map((l) => (
+                <option key={l.code} value={l.code}>
+                  {l.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </header>
 
       <main>{content}</main>
