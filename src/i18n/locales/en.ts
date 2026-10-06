@@ -160,6 +160,7 @@ export const en: TranslationSchema = {
     schedule: 'Schedule',
     emojis: 'Emojis',
     response: 'Response times',
+    initiative: 'Initiative',
   },
   weekdayFull: {
     mon: 'Monday',
@@ -222,6 +223,20 @@ export const en: TranslationSchema = {
     responseTrendTitle: 'Average response time over time',
     responseTrendInfo:
       'Average time (in minutes) taken to reply to another person, per period. Very long gaps (new conversations) are discarded.',
+    initiativeTrendTitle: 'Conversation initiative over time',
+    initiativeTrendInfo:
+      'Number of conversations started by each person per period. A new conversation starts after more than {{gap}} min of inactivity. One line per active series.',
+    initiativeBarsTitle: 'Who starts conversations',
+    initiativeBarsInfo:
+      'Number of conversations each person starts, and their share of the total. A new conversation starts after more than {{gap}} min of inactivity.',
+    initiativeUnit: 'conversations',
+    initiativeCount: 'conversations started',
+    initiativeGap: 'inactivity gap',
+    initiativeGapLabel: 'New conversation after',
+    responseBarsTitle: 'Average response time',
+    responseBarsInfo:
+      'Average time (in minutes) to reply to another person, by series. Very long gaps (new conversations) are discarded.',
+    responseCount: 'replies',
     resetZoom: 'Reset zoom',
     fullView: 'Full view',
     showing: 'showing {{shown}} of {{total}}',

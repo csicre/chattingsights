@@ -303,6 +303,72 @@ export function buildResponseTrend(
   return series;
 }
 
+/** Una barra del gráfico de tiempos de respuesta (una por serie). */
+export interface ResponseBar {
+  /** Clave de la serie (autor, día de semana o 'all'). */
+  key: string;
+  /** Tiempo de respuesta medio en MINUTOS. */
+  avgMinutes: number;
+  /** Nº de respuestas consideradas (para el tooltip). */
+  count: number;
+}
+
+/**
+ * Barras del TIEMPO DE RESPUESTA medio por serie (según la leyenda).
+ *
+ * Usa el mismo criterio que `buildResponseTrend`: un "tiempo de respuesta" es el
+ * hueco (en segundos) entre un mensaje y el inmediatamente anterior cuando los
+ * autores son distintos, descartando huecos demasiado largos (nuevas
+ * conversaciones). La respuesta se atribuye a quien responde.
+ *
+ * @param maxGapMinutes huecos mayores a esto no cuentan como respuesta.
+ */
+export function buildResponseBars(
+  points: MessagePoint[],
+  split: SeriesSplit,
+  maxGapMinutes = 180,
+): ResponseBar[] {
+  const ordered = [...points].sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+  const maxGapSec = maxGapMinutes * 60;
+  const bySeries = new Map<string, { sum: number; n: number }>();
+
+  for (let i = 1; i < ordered.length; i++) {
+    const cur = ordered[i];
+    const prev = ordered[i - 1];
+    if (cur.author === prev.author) continue;
+    const gapSec = (cur.timestamp.getTime() - prev.timestamp.getTime()) / 1000;
+    if (gapSec <= 0 || gapSec > maxGapSec) continue;
+
+    const key = seriesKeyOf(cur, split);
+    let acc = bySeries.get(key);
+    if (!acc) {
+      acc = { sum: 0, n: 0 };
+      bySeries.set(key, acc);
+    }
+    acc.n += 1;
+    acc.sum += gapSec;
+  }
+
+  const bars: ResponseBar[] = Array.from(bySeries.entries()).map(([key, acc]) => ({
+    key,
+    avgMinutes: acc.n ? acc.sum / acc.n / 60 : 0,
+    count: acc.n,
+  }));
+  sortBars(bars, split);
+  return bars;
+}
+
+/** Ordena las barras según el criterio de división (día de semana en orden
+ *  natural; el resto, alfabético por clave). */
+function sortBars(bars: ResponseBar[], split: SeriesSplit): void {
+  if (split === 'weekday') {
+    const idx = (k: string) => WEEKDAY_KEYS.indexOf(k as (typeof WEEKDAY_KEYS)[number]);
+    bars.sort((a, b) => idx(a.key) - idx(b.key));
+  } else {
+    bars.sort((a, b) => a.key.localeCompare(b.key));
+  }
+}
+
 /** KPIs agregados sobre un conjunto de puntos (ya filtrados). */
 export interface DashboardKpis {
   messages: number;
@@ -383,6 +449,50 @@ export interface EmojiCount {
   count: number;
 }
 
+/** Un emoji del ranking con su conteo total y el desglose por serie. */
+export interface EmojiRankRow {
+  emoji: string;
+  /** Conteo total (suma de todas las series). Define el orden del ranking. */
+  count: number;
+  /** Conteo por clave de serie (autor / día de semana / 'all'). */
+  bySeries: Record<string, number>;
+}
+
+/**
+ * Ranking de emojis desglosado por serie según el criterio de la leyenda.
+ * El orden lo marca el conteo TOTAL de cada emoji; cada fila incluye el reparto
+ * por categoría (`bySeries`) para poder dibujar barras apiladas.
+ *
+ * @param limit nº máximo de emojis del ranking.
+ */
+export function computeEmojiRanking(
+  points: MessagePoint[],
+  split: SeriesSplit,
+  limit = 15,
+): EmojiRankRow[] {
+  const totals = new Map<string, number>();
+  const bySeries = new Map<string, Record<string, number>>();
+
+  for (const p of points) {
+    if (p.emojiCount === 0) continue;
+    const key = seriesKeyOf(p, split);
+    for (const e of p.emojis) {
+      totals.set(e, (totals.get(e) ?? 0) + 1);
+      let row = bySeries.get(e);
+      if (!row) {
+        row = {};
+        bySeries.set(e, row);
+      }
+      row[key] = (row[key] ?? 0) + 1;
+    }
+  }
+
+  return Array.from(totals.entries())
+    .map(([emoji, count]) => ({ emoji, count, bySeries: bySeries.get(emoji) ?? {} }))
+    .sort((a, b) => b.count - a.count || a.emoji.localeCompare(b.emoji))
+    .slice(0, limit);
+}
+
 /** Calcula los KPIs de emojis y el ranking (top) sobre los puntos dados. */
 export function computeEmojiStats(points: MessagePoint[]): {
   kpis: EmojiKpis;
@@ -419,7 +529,7 @@ export function computeEmojiStats(points: MessagePoint[]): {
    Funciones de datos para las solapas General/Horario.
    ========================================================================== */
 
-import type { HourBin, TemporalPoint, WeekdayBar } from './types';
+import type { HourBin, InitiativeBar, TemporalPoint, WeekdayBar } from './types';
 
 /**
  * Scatter temporal: agrega mensajes por periodo y, opcionalmente, por autor.
@@ -521,4 +631,97 @@ export function buildWeekdayBars(points: MessagePoint[]): WeekdayBar[] {
     counts[idx] += 1;
   }
   return WEEKDAY_ORDER.map((key, index) => ({ key, index, count: counts[index] }));
+}
+
+/* ============================================================================
+   Iniciativa en la conversación.
+
+   Una "conversación" se separa de la siguiente cuando pasa más de `gapMinutes`
+   de inactividad (sin mensajes). El autor del primer mensaje tras ese silencio
+   (o el primer mensaje del chat) es quien INICIA la conversación. Ambas
+   funciones comparten exactamente este criterio y el parámetro `gapMinutes`.
+   ========================================================================== */
+
+/**
+ * Detecta los mensajes que INICIAN una conversación: el primer mensaje del chat
+ * y todo mensaje cuyo hueco con el anterior supera `gapMinutes`. Devuelve esos
+ * puntos (ya ordenados cronológicamente) para que las visualizaciones los
+ * agrupen como quieran.
+ *
+ * `points` se ordena internamente; para que los huecos sean correctos NO debe
+ * filtrarse por autor antes de llamar (si se filtra, solo se verán los inicios
+ * de ese autor y los huecos pueden quedar distorsionados).
+ */
+function initiationPoints(points: MessagePoint[], gapMinutes: number): MessagePoint[] {
+  const ordered = [...points].sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+  const gapSec = gapMinutes * 60;
+  const starters: MessagePoint[] = [];
+  for (let i = 0; i < ordered.length; i++) {
+    if (i === 0) {
+      starters.push(ordered[i]);
+      continue;
+    }
+    const gap = (ordered[i].timestamp.getTime() - ordered[i - 1].timestamp.getTime()) / 1000;
+    if (gap > gapSec) starters.push(ordered[i]);
+  }
+  return starters;
+}
+
+/**
+ * Serie temporal de la INICIATIVA: nº de conversaciones iniciadas por periodo,
+ * atribuidas a quien las inicia (según el criterio de división de la leyenda).
+ *
+ * @param gapMinutes huecos mayores a esto inician una nueva conversación.
+ */
+export function buildInitiativeTrend(
+  points: MessagePoint[],
+  group: TimeGroup,
+  split: SeriesSplit,
+  gapMinutes: number,
+): TrendSeries[] {
+  const starters = initiationPoints(points, gapMinutes);
+  const bySeries = new Map<string, Map<number, number>>();
+
+  for (const p of starters) {
+    const key = seriesKeyOf(p, split);
+    const bt = bucketStart(p.timestamp, group).getTime();
+    let buckets = bySeries.get(key);
+    if (!buckets) {
+      buckets = new Map();
+      bySeries.set(key, buckets);
+    }
+    buckets.set(bt, (buckets.get(bt) ?? 0) + 1);
+  }
+
+  const series: TrendSeries[] = [];
+  for (const [key, buckets] of bySeries) {
+    const sorted = Array.from(buckets.entries()).sort((a, b) => a[0] - b[0]);
+    series.push({
+      key,
+      points: sorted.map(([bt, count]) => ({ t: new Date(bt), value: count })),
+    });
+  }
+  sortSeries(series, split);
+  return series;
+}
+
+/**
+ * Barras de INICIATIVA: nº de conversaciones iniciadas por cada autor y su
+ * porcentaje sobre el total. Ordenadas de más a menos iniciativa.
+ *
+ * @param gapMinutes huecos mayores a esto inician una nueva conversación.
+ */
+export function buildInitiativeBars(
+  points: MessagePoint[],
+  gapMinutes: number,
+): InitiativeBar[] {
+  const starters = initiationPoints(points, gapMinutes);
+  const counts = new Map<string, number>();
+  for (const p of starters) {
+    counts.set(p.author, (counts.get(p.author) ?? 0) + 1);
+  }
+  const total = starters.length || 1;
+  return Array.from(counts.entries())
+    .map(([author, count]) => ({ author, count, pct: (count / total) * 100 }))
+    .sort((a, b) => b.count - a.count || a.author.localeCompare(b.author));
 }

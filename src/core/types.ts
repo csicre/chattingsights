@@ -252,3 +252,13 @@ export interface WeekdayBar {
   index: number;
   count: number;
 }
+
+/** Una barra del gráfico de iniciativa: conversaciones iniciadas por autor. */
+export interface InitiativeBar {
+  /** Autor que inicia conversaciones. */
+  author: string;
+  /** Nº de conversaciones que ha iniciado (rompe un silencio largo). */
+  count: number;
+  /** Porcentaje sobre el total de conversaciones iniciadas (0..100). */
+  pct: number;
+}

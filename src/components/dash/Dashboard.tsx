@@ -3,10 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { useApp } from '@/state/AppContext';
 import {
   applyFilters,
+  buildInitiativeTrend,
   buildMessagePoints,
   buildResponseTrend,
   buildTrendSeries,
   computeDashboardKpis,
+  computeEmojiRanking,
   computeEmojiStats,
   deriveFilterOptions,
   seriesCategories,
@@ -21,10 +23,15 @@ import { ScatterTemporal } from './ScatterTemporal';
 import { HourHistogram } from './HourHistogram';
 import { WeekdayBars } from './WeekdayBars';
 import { TrendPanel } from './TrendPanel';
+import { InitiativeBars } from './InitiativeBars';
+import { ResponseBars } from './ResponseBars';
 import { EmojiBars } from './EmojiBars';
 import { Tabs, type TabItem } from './Tabs';
 
-type TabId = 'general' | 'schedule' | 'emojis' | 'response';
+type TabId = 'general' | 'schedule' | 'emojis' | 'response' | 'initiative';
+
+/** Opciones de hueco de inactividad (minutos) para separar conversaciones. */
+const INITIATIVE_GAP_OPTIONS = [30, 60, 120, 240] as const;
 
 /**
  * Dashboard interactivo con solapas. La columna de filtros (izquierda) y el
@@ -40,6 +47,8 @@ export function Dashboard() {
   const [timeGroup, setTimeGroup] = useState<TimeGroup>('day');
   const [split, setSplit] = useState<SeriesSplit>('none');
   const [tab, setTab] = useState<TabId>('general');
+  // Hueco de inactividad (minutos) que separa una conversación de la siguiente.
+  const [initiativeGap, setInitiativeGap] = useState<number>(60);
 
   const allPoints = useMemo(() => (parsed ? buildMessagePoints(parsed) : []), [parsed]);
   const options = useMemo(() => deriveFilterOptions(allPoints), [allPoints]);
@@ -62,6 +71,11 @@ export function Dashboard() {
   // --- Métricas por solapa (memorizadas) ---
   const genKpis = useMemo(() => computeDashboardKpis(points), [points]);
   const emoji = useMemo(() => computeEmojiStats(points), [points]);
+  // Ranking de emojis (top 5) desglosado según la leyenda elegida.
+  const emojiRanking = useMemo(
+    () => computeEmojiRanking(points, split, 5),
+    [points, split],
+  );
 
   const countSeries = useMemo(
     () => buildTrendSeries(points, timeGroup, 'count', split),
@@ -79,6 +93,10 @@ export function Dashboard() {
     () => buildResponseTrend(points, timeGroup, split),
     [points, timeGroup, split],
   );
+  const initiativeSeries = useMemo(
+    () => buildInitiativeTrend(points, timeGroup, split, initiativeGap),
+    [points, timeGroup, split, initiativeGap],
+  );
 
   const setFilters = (updater: (prev: ChatFilters) => ChatFilters) =>
     setFiltersState((prev) => updater(prev));
@@ -91,6 +109,7 @@ export function Dashboard() {
     { id: 'schedule', label: t('tabs.schedule') },
     { id: 'emojis', label: t('tabs.emojis') },
     { id: 'response', label: t('tabs.response') },
+    { id: 'initiative', label: t('tabs.initiative') },
   ];
 
   // KPIs de la solapa General.
@@ -209,7 +228,6 @@ export function Dashboard() {
         ) : tab === 'emojis' ? (
           <>
             <KpiStrip items={emojiKpis} />
-            <EmojiBars data={emoji.top} title={t('dash.emojiTopTitle')} info={t('dash.emojiTopInfo')} />
             <TrendPanel
               series={emojiSeries}
               categories={categories}
@@ -220,18 +238,71 @@ export function Dashboard() {
               decimals={0}
               fullWidth
             />
+            <div className="aux-row">
+              <EmojiBars
+                rows={emojiRanking}
+                categories={categories}
+                split={split}
+                title={t('dash.emojiTopTitle')}
+                info={t('dash.emojiTopInfo')}
+              />
+            </div>
+          </>
+        ) : tab === 'response' ? (
+          <>
+            <TrendPanel
+              series={responseSeries}
+              categories={categories}
+              split={split}
+              title={t('dash.responseTrendTitle')}
+              info={t('dash.responseTrendInfo')}
+              unit={t('dash.minutesUnit')}
+              decimals={1}
+              fullWidth
+            />
+            <div className="aux-row">
+              <ResponseBars
+                points={points}
+                categories={categories}
+                split={split}
+                title={t('dash.responseBarsTitle')}
+                info={t('dash.responseBarsInfo')}
+              />
+            </div>
           </>
         ) : (
-          <TrendPanel
-            series={responseSeries}
-            categories={categories}
-            split={split}
-            title={t('dash.responseTrendTitle')}
-            info={t('dash.responseTrendInfo')}
-            unit={t('dash.minutesUnit')}
-            decimals={1}
-            fullWidth
-          />
+          <>
+            <div className="group">
+              <h3>{t('dash.initiativeGapLabel')}</h3>
+              <div className="segmented">
+                {INITIATIVE_GAP_OPTIONS.map((min) => (
+                  <button
+                    key={min}
+                    className={initiativeGap === min ? 'active' : ''}
+                    onClick={() => setInitiativeGap(min)}
+                  >
+                    {min} min
+                  </button>
+                ))}
+              </div>
+            </div>
+            <TrendPanel
+              series={initiativeSeries}
+              categories={categories}
+              split={split}
+              title={t('dash.initiativeTrendTitle')}
+              info={t('dash.initiativeTrendInfo', { gap: initiativeGap })}
+              unit={t('dash.initiativeUnit')}
+              decimals={0}
+              fullWidth
+            />
+            <InitiativeBars
+              points={points}
+              gapMinutes={initiativeGap}
+              title={t('dash.initiativeBarsTitle')}
+              info={t('dash.initiativeBarsInfo', { gap: initiativeGap })}
+            />
+          </>
         )}
       </div>
     </div>

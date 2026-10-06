@@ -158,6 +158,7 @@ export const es = {
     schedule: 'Horario',
     emojis: 'Emojis',
     response: 'Tiempos de respuesta',
+    initiative: 'Iniciativa',
   },
   weekdayFull: {
     mon: 'Lunes',
@@ -222,6 +223,20 @@ export const es = {
     responseTrendTitle: 'Evolución del tiempo de respuesta medio',
     responseTrendInfo:
       'Tiempo medio (en minutos) que se tarda en responder a otra persona, por periodo. Se descartan los huecos muy largos (nuevas conversaciones).',
+    initiativeTrendTitle: 'Evolución de la iniciativa en la conversación',
+    initiativeTrendInfo:
+      'Nº de conversaciones iniciadas por cada persona en cada periodo. Una nueva conversación empieza tras más de {{gap}} min de inactividad. Una línea por serie activa.',
+    initiativeBarsTitle: 'Quién inicia las conversaciones',
+    initiativeBarsInfo:
+      'Nº de conversaciones que inicia cada persona y su porcentaje sobre el total. Una nueva conversación empieza tras más de {{gap}} min de inactividad.',
+    initiativeUnit: 'conversaciones',
+    initiativeCount: 'conversaciones iniciadas',
+    initiativeGap: 'hueco de inactividad',
+    initiativeGapLabel: 'Nueva conversación tras',
+    responseBarsTitle: 'Tiempo de respuesta medio',
+    responseBarsInfo:
+      'Tiempo medio (en minutos) que se tarda en responder a otra persona, por serie. Se descartan los huecos muy largos (nuevas conversaciones).',
+    responseCount: 'respuestas',
     resetZoom: 'Restablecer zoom',
     fullView: 'Vista completa',
     showing: 'mostrando {{shown}} de {{total}}',
