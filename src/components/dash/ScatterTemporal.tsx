@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { theme, makeColorScale } from '@/core/theme';
 import { useResizeObserver } from '@/hooks/useResizeObserver';
 import { buildTemporalScatter } from '@/core/dashboard';
-import type { MessagePoint, TemporalPoint, TimeGroup } from '@/core/types';
+import type { MessagePoint, SeriesSplit, TemporalPoint, TimeGroup } from '@/core/types';
 import { InfoTip } from './InfoTip';
 import { Legend } from './Legend';
 
@@ -19,10 +19,12 @@ interface Props {
   points: MessagePoint[];
   categories: string[];
   timeGroup: TimeGroup;
-  splitByAuthor: boolean;
+  split: SeriesSplit;
+  /** Callback cuando se clica un punto con messageId (modo 'points'). */
+  onPointClick?: (messageId: number) => void;
 }
 
-export function ScatterTemporal({ points, categories, timeGroup, splitByAuthor }: Props) {
+export function ScatterTemporal({ points, categories, timeGroup, split, onPointClick }: Props) {
   const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -35,9 +37,11 @@ export function ScatterTemporal({ points, categories, timeGroup, splitByAuthor }
   const INNER_H = HEIGHT - MARGIN.top - MARGIN.bottom;
 
   const data = useMemo(
-    () => buildTemporalScatter(points, timeGroup, splitByAuthor),
-    [points, timeGroup, splitByAuthor],
+    () => buildTemporalScatter(points, timeGroup, split),
+    [points, timeGroup, split],
   );
+
+  const isSplit = split !== 'none';
 
   const color = useMemo(() => makeColorScale(categories), [categories]);
 
@@ -104,38 +108,66 @@ export function ScatterTemporal({ points, categories, timeGroup, splitByAuthor }
       .attr('text-anchor', 'middle')
       .text(t('dash.temporalYLabel'));
 
+    // En modo 'points' cada punto es un mensaje concreto y es clicable.
+    const pointsMode = timeGroup === 'points';
+
     // Puntos
+    const baseR = (d: TemporalPoint) => (pointsMode ? 5 : rScale(d.count));
     g.selectAll('circle.pt')
       .data(data)
       .join('circle')
       .attr('class', 'pt')
       .attr('cx', (d) => x(d.t))
       .attr('cy', (d) => y(d.avgWords))
-      .attr('r', (d) => rScale(d.count))
-      .attr('fill', (d) => splitByAuthor ? color(d.key) : theme.color.accent)
+      .attr('r', baseR)
+      .attr('fill', (d) => isSplit ? color(d.key) : theme.color.accent)
       .attr('fill-opacity', 0.6)
       .attr('stroke', theme.point.stroke)
-      .attr('stroke-width', theme.point.strokeWidth);
+      .attr('stroke-width', theme.point.strokeWidth)
+      .style('cursor', pointsMode ? 'pointer' : 'default');
 
     // Tooltip
     const tooltipSel = d3.select(tooltipRef.current);
-    const fmtDate = (d: Date) => new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(d);
+    const fmtDate = (d: Date) =>
+      new Intl.DateTimeFormat(undefined, pointsMode ? { dateStyle: 'medium', timeStyle: 'short' } : { dateStyle: 'medium' }).format(d);
 
     g.selectAll<SVGCircleElement, TemporalPoint>('circle.pt')
-      .on('mousemove', (event: MouseEvent, d) => {
+      .on('mousemove', function (event: MouseEvent, d) {
+        if (pointsMode) {
+          d3.select(this)
+            .attr('r', baseR(d) + 2)
+            .attr('fill-opacity', 0.9)
+            .attr('stroke', theme.color.text);
+        }
         tooltipSel
           .style('display', 'block')
           .style('left', `${event.clientX + 14}px`)
           .style('top', `${event.clientY + 14}px`)
           .html(
             `<div class="tt-title">${fmtDate(d.t)}</div>` +
-            (splitByAuthor ? `<div class="tt-row"><span>${t('detail.author')}</span><span>${d.key}</span></div>` : '') +
-            `<div class="tt-row"><span>${t('dash.msgCount')}</span><span>${d.count}</span></div>` +
-            `<div class="tt-row"><span>${t('dash.temporalYLabel')}</span><span>${d3.format(',.1f')(d.avgWords)}</span></div>`,
+            (isSplit
+              ? `<div class="tt-row"><span>${split === 'weekday' ? t('legend.series') : t('detail.author')}</span><span>${split === 'weekday' ? t(`weekday.${d.key}`) : d.key}</span></div>`
+              : '') +
+            (pointsMode
+              ? `<div class="tt-row"><span>${t('detail.words')}</span><span>${d.avgWords}</span></div>` +
+                `<div class="tt-hint">${t('dash.pointClickHint')}</div>`
+              : `<div class="tt-row"><span>${t('dash.msgCount')}</span><span>${d.count}</span></div>` +
+                `<div class="tt-row"><span>${t('dash.temporalYLabel')}</span><span>${d3.format(',.1f')(d.avgWords)}</span></div>`),
           );
       })
-      .on('mouseleave', () => tooltipSel.style('display', 'none'));
-  }, [data, color, rScale, splitByAuthor, hostWidth, t, WIDTH, HEIGHT, INNER_W, INNER_H]);
+      .on('mouseleave', function (_event: MouseEvent, d) {
+        if (pointsMode) {
+          d3.select(this)
+            .attr('r', baseR(d))
+            .attr('fill-opacity', 0.6)
+            .attr('stroke', theme.point.stroke);
+        }
+        tooltipSel.style('display', 'none');
+      })
+      .on('click', (_event: MouseEvent, d) => {
+        if (pointsMode && d.messageId != null) onPointClick?.(d.messageId);
+      });
+  }, [data, color, rScale, isSplit, split, timeGroup, onPointClick, hostWidth, t, WIDTH, HEIGHT, INNER_W, INNER_H]);
 
   return (
     <div className="chart-panel" ref={containerRef}>
@@ -152,7 +184,7 @@ export function ScatterTemporal({ points, categories, timeGroup, splitByAuthor }
           <svg ref={svgRef} role="img" aria-label={t('dash.temporalTitle')} />
         </div>
       )}
-      <Legend categories={categories} splitByAuthor={splitByAuthor} />
+      <Legend categories={categories} split={split} />
       <div ref={tooltipRef} className="tooltip" style={{ display: 'none' }} />
     </div>
   );

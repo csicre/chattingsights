@@ -3,13 +3,13 @@ import type { TranslationSchema } from './es';
 export const en: TranslationSchema = {
   app: {
     name: 'ChattingSights',
-    tagline: 'Uncover the secrets of your conversations',
+    tagline: 'Analyze your WhatsApp chats',
   },
   nav: {
     language: 'Language',
   },
   landing: {
-    title: 'Analyze your WhatsApp chats',
+    title: 'Uncover the secrets of your WhatsApp conversations',
     subtitle:
       'Upload a conversation export and discover patterns, emotions, and habits. Everything runs in your browser: your messages never leave your device.',
     cta: 'Get started',
@@ -141,6 +141,7 @@ export const en: TranslationSchema = {
   },
   time: {
     title: 'Time grouping',
+    points: 'Points',
     day: 'Day',
     week: 'Week',
     month: 'Month',
@@ -149,7 +150,9 @@ export const en: TranslationSchema = {
   legend: {
     title: 'Legend',
     byPerson: 'Person',
-    hint: 'When on, each person is a series with its own colour.',
+    byWeekday: 'Day of week',
+    series: 'series',
+    hint: 'When on, each category is a series with its own colour.',
     allSeries: 'All',
   },
   tabs: {
@@ -231,6 +234,7 @@ export const en: TranslationSchema = {
     minutesUnit: 'minutes',
     ofTotal: 'of total',
     emojiLegend: 'Usage count',
+    pointClickHint: 'Click to see the message',
   },
   detail: {
     title: 'Message detail',

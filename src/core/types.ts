@@ -157,8 +157,21 @@ export interface MessagePoint {
   isWeekend: boolean;
 }
 
-/** Nivel de agrupación temporal de las series. */
-export type TimeGroup = 'day' | 'week' | 'month';
+/**
+ * Nivel de agrupación temporal de las series.
+ * 'points' no agrupa: cada mensaje es un punto independiente (solo aplica al
+ * scatter temporal, donde permite clicar un punto e ir al mensaje concreto).
+ */
+export type TimeGroup = 'points' | 'day' | 'week' | 'month';
+
+/**
+ * Criterio para dividir las series en varias (una por categoría), controlado
+ * desde el bloque "Leyenda".
+ *  - 'none': una única serie 'all'.
+ *  - 'author': una serie por persona.
+ *  - 'weekday': una serie por día de la semana (clave i18n mon..sun).
+ */
+export type SeriesSplit = 'none' | 'author' | 'weekday';
 
 /** Valor del filtro de festivo. */
 export type HolidayFilter = 'all' | 'weekend' | 'weekday';
@@ -212,6 +225,11 @@ export interface TemporalPoint {
   avgWords: number;
   /** Nº de mensajes agregados en el periodo (para el tooltip y el tamaño). */
   count: number;
+  /**
+   * Id del mensaje concreto, solo presente en la agrupación 'points' (sin
+   * agrupar). Permite clicar el punto y navegar al detalle del mensaje.
+   */
+  messageId?: number;
 }
 
 /** Una barra del histograma horario. */

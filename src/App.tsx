@@ -10,23 +10,11 @@ import { clearCheckoutParams, readCheckoutReturn } from './services/checkout';
 
 type View = 'landing' | 'upload';
 
-/** Lee el tema inicial de localStorage (oscuro por defecto). */
-function initialTheme(): 'dark' | 'light' {
-  return localStorage.getItem('chattingsights:theme') === 'light' ? 'light' : 'dark';
-}
-
 export function App() {
   const { t, i18n } = useTranslation();
   const { report, unlock, selectedMessageId } = useApp();
   const [view, setView] = useState<View>('landing');
   const [toast, setToast] = useState<string | null>(null);
-  const [themeMode, setThemeMode] = useState<'dark' | 'light'>(initialTheme);
-
-  // Aplica el tema al <html> (data-theme) y lo persiste.
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', themeMode);
-    localStorage.setItem('chattingsights:theme', themeMode);
-  }, [themeMode]);
 
   // Al volver de Stripe Checkout, confirma el desbloqueo.
   useEffect(() => {
@@ -65,13 +53,6 @@ export function App() {
           </span>
         </div>
         <div className="header-actions">
-          <button
-            className="theme-toggle"
-            onClick={() => setThemeMode((m) => (m === 'dark' ? 'light' : 'dark'))}
-            aria-label="Theme"
-          >
-            {themeMode === 'dark' ? '☀️' : '🌙'}
-          </button>
           <select
             className="lang-select"
             value={i18n.language.split('-')[0]}

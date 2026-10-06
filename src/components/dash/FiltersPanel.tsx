@@ -4,6 +4,7 @@ import type {
   ChatFilters,
   FilterOptions,
   HolidayFilter,
+  SeriesSplit,
   TimeGroup,
 } from '@/core/types';
 
@@ -22,8 +23,8 @@ interface FiltersPanelProps {
   resetFilters: () => void;
   timeGroup: TimeGroup;
   setTimeGroup: (g: TimeGroup) => void;
-  splitByAuthor: boolean;
-  setSplitByAuthor: (v: boolean) => void;
+  split: SeriesSplit;
+  setSplit: (v: SeriesSplit) => void;
 }
 
 export function FiltersPanel({
@@ -33,8 +34,8 @@ export function FiltersPanel({
   resetFilters,
   timeGroup,
   setTimeGroup,
-  splitByAuthor,
-  setSplitByAuthor,
+  split,
+  setSplit,
 }: FiltersPanelProps) {
   const { t } = useTranslation();
 
@@ -52,6 +53,7 @@ export function FiltersPanel({
   ];
 
   const timeOptions: { id: TimeGroup; label: string }[] = [
+    { id: 'points', label: t('time.points') },
     { id: 'day', label: t('time.day') },
     { id: 'week', label: t('time.week') },
     { id: 'month', label: t('time.month') },
@@ -170,10 +172,16 @@ export function FiltersPanel({
           <h3>{t('legend.title')}</h3>
           <div className="pills">
             <button
-              className={`pill ${splitByAuthor ? 'active' : ''}`}
-              onClick={() => setSplitByAuthor(!splitByAuthor)}
+              className={`pill ${split === 'author' ? 'active' : ''}`}
+              onClick={() => setSplit(split === 'author' ? 'none' : 'author')}
             >
               {t('legend.byPerson')}
+            </button>
+            <button
+              className={`pill ${split === 'weekday' ? 'active' : ''}`}
+              onClick={() => setSplit(split === 'weekday' ? 'none' : 'weekday')}
+            >
+              {t('legend.byWeekday')}
             </button>
           </div>
           <p className="hint">{t('legend.hint')}</p>

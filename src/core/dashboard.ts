@@ -16,6 +16,7 @@ import type {
   FilterOptions,
   MessagePoint,
   ParsedChat,
+  SeriesSplit,
   TimeGroup,
   TrendSeries,
 } from './types';
@@ -100,12 +101,14 @@ export function applyFilters(points: MessagePoint[], filters: ChatFilters): Mess
   });
 }
 
-/** Devuelve el inicio del cubo temporal (local) para una fecha y nivel. */
+/** Devuelve el inicio del cubo temporal (local) para una fecha y nivel.
+ *  'points' se trata como 'day' para las funciones de series/tendencias. */
 function bucketStart(d: Date, group: TimeGroup): Date {
-  if (group === 'day') {
+  const g = group === 'points' ? 'day' : group;
+  if (g === 'day') {
     return new Date(d.getFullYear(), d.getMonth(), d.getDate());
   }
-  if (group === 'week') {
+  if (g === 'week') {
     // Semana que empieza en lunes.
     const day = (d.getDay() + 6) % 7; // 0 = lunes
     const start = new Date(d.getFullYear(), d.getMonth(), d.getDate() - day);
@@ -113,6 +116,43 @@ function bucketStart(d: Date, group: TimeGroup): Date {
   }
   // month
   return new Date(d.getFullYear(), d.getMonth(), 1);
+}
+
+/** Días de la semana en orden lunes..domingo (claves i18n). */
+export const WEEKDAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const;
+
+/** Clave i18n del día de la semana de una fecha (0=lun .. 6=dom). */
+function weekdayKey(d: Date): string {
+  return WEEKDAY_KEYS[(d.getDay() + 6) % 7];
+}
+
+/** Devuelve la clave de serie de un mensaje según el criterio de división. */
+export function seriesKeyOf(p: MessagePoint, split: SeriesSplit): string {
+  switch (split) {
+    case 'author':
+      return p.author;
+    case 'weekday':
+      return weekdayKey(p.timestamp);
+    case 'none':
+    default:
+      return 'all';
+  }
+}
+
+/**
+ * Lista ordenada de categorías (claves de serie) para un criterio de división y
+ * un conjunto de autores. Define el dominio de color y el orden de la leyenda.
+ */
+export function seriesCategories(split: SeriesSplit, authors: string[]): string[] {
+  switch (split) {
+    case 'author':
+      return [...authors];
+    case 'weekday':
+      return [...WEEKDAY_KEYS];
+    case 'none':
+    default:
+      return [];
+  }
 }
 
 /** Métrica agregada de una serie temporal. */
@@ -142,21 +182,32 @@ function isAverage(metric: TrendMetric): boolean {
   return metric === 'avgWords' || metric === 'avgLength';
 }
 
+/** Ordena las series según el criterio de división (día de semana en orden
+ *  natural; el resto, alfabético por clave). */
+function sortSeries(series: TrendSeries[], split: SeriesSplit): void {
+  if (split === 'weekday') {
+    const idx = (k: string) => WEEKDAY_KEYS.indexOf(k as (typeof WEEKDAY_KEYS)[number]);
+    series.sort((a, b) => idx(a.key) - idx(b.key));
+  } else {
+    series.sort((a, b) => a.key.localeCompare(b.key));
+  }
+}
+
 /**
- * Construye series temporales. Si `splitByAuthor` es true, genera una serie por
- * autor; si no, una única serie 'all'.
+ * Construye series temporales. `split` decide cómo se dividen: una única serie
+ * 'all', una por autor, o una por día de la semana.
  */
 export function buildTrendSeries(
   points: MessagePoint[],
   group: TimeGroup,
   metric: TrendMetric,
-  splitByAuthor: boolean,
+  split: SeriesSplit,
 ): TrendSeries[] {
   // Mapa serieKey -> (bucketTime -> acumulador)
   const bySeries = new Map<string, Map<number, { sum: number; n: number }>>();
 
   for (const p of points) {
-    const key = splitByAuthor ? p.author : 'all';
+    const key = seriesKeyOf(p, split);
     const bt = bucketStart(p.timestamp, group).getTime();
     let buckets = bySeries.get(key);
     if (!buckets) {
@@ -184,8 +235,7 @@ export function buildTrendSeries(
       })),
     });
   }
-  // Orden estable por nombre de serie.
-  series.sort((a, b) => a.key.localeCompare(b.key));
+  sortSeries(series, split);
   return series;
 }
 
@@ -206,7 +256,7 @@ export function buildTrendSeries(
 export function buildResponseTrend(
   points: MessagePoint[],
   group: TimeGroup,
-  splitByAuthor: boolean,
+  split: SeriesSplit,
   maxGapMinutes = 180,
 ): TrendSeries[] {
   const ordered = [...points].sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
@@ -220,8 +270,8 @@ export function buildResponseTrend(
     const gapSec = (cur.timestamp.getTime() - prev.timestamp.getTime()) / 1000;
     if (gapSec <= 0 || gapSec > maxGapSec) continue;
 
-    // La respuesta se atribuye a quien responde (cur.author).
-    const key = splitByAuthor ? cur.author : 'all';
+    // La respuesta se atribuye a quien responde (cur).
+    const key = seriesKeyOf(cur, split);
     const bt = bucketStart(cur.timestamp, group).getTime();
     let buckets = bySeries.get(key);
     if (!buckets) {
@@ -249,7 +299,7 @@ export function buildResponseTrend(
       })),
     });
   }
-  series.sort((a, b) => a.key.localeCompare(b.key));
+  sortSeries(series, split);
   return series;
 }
 
@@ -379,12 +429,26 @@ import type { HourBin, TemporalPoint, WeekdayBar } from './types';
 export function buildTemporalScatter(
   points: MessagePoint[],
   group: TimeGroup,
-  splitByAuthor: boolean,
+  split: SeriesSplit,
 ): TemporalPoint[] {
+  // Modo 'puntos': sin agrupar. Cada mensaje es un punto independiente, con su
+  // timestamp real (eje X), sus palabras (eje Y) y su id para navegar al detalle.
+  if (group === 'points') {
+    return points
+      .map((p) => ({
+        key: seriesKeyOf(p, split),
+        t: p.timestamp,
+        avgWords: p.words,
+        count: 1,
+        messageId: p.id,
+      }))
+      .sort((a, b) => a.t.getTime() - b.t.getTime());
+  }
+
   const bySeries = new Map<string, Map<number, { sumW: number; n: number }>>();
 
   for (const p of points) {
-    const key = splitByAuthor ? p.author : 'all';
+    const key = seriesKeyOf(p, split);
     const bt = bucketStart(p.timestamp, group).getTime();
     let buckets = bySeries.get(key);
     if (!buckets) { buckets = new Map(); bySeries.set(key, buckets); }

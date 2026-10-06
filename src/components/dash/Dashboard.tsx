@@ -9,10 +9,11 @@ import {
   computeDashboardKpis,
   computeEmojiStats,
   deriveFilterOptions,
+  seriesCategories,
   EMPTY_FILTERS,
 } from '@/core/dashboard';
 import { formatDate, formatNumber } from '@/core/format';
-import type { ChatFilters, TimeGroup } from '@/core/types';
+import type { ChatFilters, SeriesSplit, TimeGroup } from '@/core/types';
 import { FiltersPanel } from './FiltersPanel';
 import { KpiStrip, type KpiItem } from './KpiStrip';
 import { ScatterPlot } from './ScatterPlot';
@@ -37,17 +38,24 @@ export function Dashboard() {
 
   const [filters, setFiltersState] = useState<ChatFilters>(EMPTY_FILTERS);
   const [timeGroup, setTimeGroup] = useState<TimeGroup>('day');
-  const [splitByAuthor, setSplitByAuthor] = useState(false);
+  const [split, setSplit] = useState<SeriesSplit>('none');
   const [tab, setTab] = useState<TabId>('general');
 
   const allPoints = useMemo(() => (parsed ? buildMessagePoints(parsed) : []), [parsed]);
   const options = useMemo(() => deriveFilterOptions(allPoints), [allPoints]);
   const points = useMemo(() => applyFilters(allPoints, filters), [allPoints, filters]);
 
-  const categories = useMemo(() => {
-    const base = filters.authors.length ? filters.authors : options.authors;
-    return [...base];
-  }, [filters.authors, options.authors]);
+  // Autores activos (dominio de color del scatter por autor de la solapa Horario).
+  const authorCategories = useMemo(
+    () => (filters.authors.length ? filters.authors : options.authors),
+    [filters.authors, options.authors],
+  );
+
+  // Categorías de las series según el criterio de división de la leyenda.
+  const categories = useMemo(
+    () => seriesCategories(split, authorCategories),
+    [split, authorCategories],
+  );
 
   const lang = report?.language ?? 'es';
 
@@ -56,20 +64,20 @@ export function Dashboard() {
   const emoji = useMemo(() => computeEmojiStats(points), [points]);
 
   const countSeries = useMemo(
-    () => buildTrendSeries(points, timeGroup, 'count', splitByAuthor),
-    [points, timeGroup, splitByAuthor],
+    () => buildTrendSeries(points, timeGroup, 'count', split),
+    [points, timeGroup, split],
   );
   const wordsSeries = useMemo(
-    () => buildTrendSeries(points, timeGroup, 'avgWords', splitByAuthor),
-    [points, timeGroup, splitByAuthor],
+    () => buildTrendSeries(points, timeGroup, 'avgWords', split),
+    [points, timeGroup, split],
   );
   const emojiSeries = useMemo(
-    () => buildTrendSeries(points, timeGroup, 'emojis', splitByAuthor),
-    [points, timeGroup, splitByAuthor],
+    () => buildTrendSeries(points, timeGroup, 'emojis', split),
+    [points, timeGroup, split],
   );
   const responseSeries = useMemo(
-    () => buildResponseTrend(points, timeGroup, splitByAuthor),
-    [points, timeGroup, splitByAuthor],
+    () => buildResponseTrend(points, timeGroup, split),
+    [points, timeGroup, split],
   );
 
   const setFilters = (updater: (prev: ChatFilters) => ChatFilters) =>
@@ -144,8 +152,8 @@ export function Dashboard() {
         resetFilters={resetFilters}
         timeGroup={timeGroup}
         setTimeGroup={setTimeGroup}
-        splitByAuthor={splitByAuthor}
-        setSplitByAuthor={setSplitByAuthor}
+        split={split}
+        setSplit={setSplit}
       />
 
       <div className="main-col">
@@ -162,13 +170,14 @@ export function Dashboard() {
               points={points}
               categories={categories}
               timeGroup={timeGroup}
-              splitByAuthor={splitByAuthor}
+              split={split}
+              onPointClick={(id) => setSelectedMessageId(id)}
             />
             <div className="aux-row">
               <TrendPanel
                 series={countSeries}
                 categories={categories}
-                splitByAuthor={splitByAuthor}
+                split={split}
                 title={t('dash.trendCountTitle')}
                 info={t('dash.trendCountInfo')}
                 unit={t('dash.msgCount')}
@@ -177,7 +186,7 @@ export function Dashboard() {
               <TrendPanel
                 series={wordsSeries}
                 categories={categories}
-                splitByAuthor={splitByAuthor}
+                split={split}
                 title={t('dash.trendWordsTitle')}
                 info={t('dash.trendWordsInfo')}
                 unit={t('dash.wordsUnit')}
@@ -189,7 +198,7 @@ export function Dashboard() {
           <>
             <ScatterPlot
               points={points}
-              categories={categories}
+              categories={authorCategories}
               onPointClick={(p) => setSelectedMessageId(p.id)}
             />
             <div className="aux-row">
@@ -204,7 +213,7 @@ export function Dashboard() {
             <TrendPanel
               series={emojiSeries}
               categories={categories}
-              splitByAuthor={splitByAuthor}
+              split={split}
               title={t('dash.emojiTrendTitle')}
               info={t('dash.emojiTrendInfo')}
               unit={t('dash.emojiUnit')}
@@ -216,7 +225,7 @@ export function Dashboard() {
           <TrendPanel
             series={responseSeries}
             categories={categories}
-            splitByAuthor={splitByAuthor}
+            split={split}
             title={t('dash.responseTrendTitle')}
             info={t('dash.responseTrendInfo')}
             unit={t('dash.minutesUnit')}

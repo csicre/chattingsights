@@ -348,7 +348,7 @@ export function ScatterPlot({ points, categories, onPointClick }: ScatterPlotPro
       <div className="chart-svg">
         <svg ref={svgRef} role="img" aria-label={t('dash.scatterTitle')} />
       </div>
-      <Legend categories={categories} splitByAuthor />
+      <Legend categories={categories} split="author" />
       <div ref={tooltipRef} className="tooltip" style={{ display: 'none' }} />
     </div>
   );

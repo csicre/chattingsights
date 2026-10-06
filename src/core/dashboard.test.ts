@@ -78,7 +78,7 @@ describe('applyFilters', () => {
 
 describe('buildTrendSeries', () => {
   it('agrupa por semana contando mensajes (serie única)', () => {
-    const series = buildTrendSeries(points, 'week', 'count', false);
+    const series = buildTrendSeries(points, 'week', 'count', 'none');
     expect(series).toHaveLength(1);
     expect(series[0].key).toBe('all');
     // Semana 1 (6-12 mar): 2 mensajes del lunes + 1 del sábado = 3 (el adjunto
@@ -89,13 +89,25 @@ describe('buildTrendSeries', () => {
   });
 
   it('divide por autor cuando se pide', () => {
-    const series = buildTrendSeries(points, 'month', 'count', true);
+    const series = buildTrendSeries(points, 'month', 'count', 'author');
     const keys = series.map((s) => s.key).sort();
     expect(keys).toEqual(['Ana', 'Luis']);
   });
 
+  it('divide por día de la semana (orden natural lun..dom)', () => {
+    const series = buildTrendSeries(points, 'day', 'count', 'weekday');
+    // Las claves deben ser días de la semana, en orden natural.
+    const keys = series.map((s) => s.key);
+    const order = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+    for (let i = 1; i < keys.length; i++) {
+      expect(order.indexOf(keys[i])).toBeGreaterThan(order.indexOf(keys[i - 1]));
+    }
+    // Todas las claves son días válidos.
+    expect(keys.every((k) => order.includes(k))).toBe(true);
+  });
+
   it('calcula longitud media por periodo', () => {
-    const series = buildTrendSeries(points, 'day', 'avgLength', false);
+    const series = buildTrendSeries(points, 'day', 'avgLength', 'none');
     for (const pt of series[0].points) {
       expect(pt.value).toBeGreaterThan(0);
     }
@@ -142,7 +154,7 @@ const respPoints = buildMessagePoints(parseWhatsAppChat(RESP_SAMPLE));
 
 describe('buildResponseTrend', () => {
   it('promedia tiempos de respuesta por periodo en minutos, descartando huecos largos', () => {
-    const series = buildResponseTrend(respPoints, 'day', false, 180);
+    const series = buildResponseTrend(respPoints, 'day', 'none', 180);
     expect(series).toHaveLength(1);
     // Dos respuestas de 2 min cada una; el hueco de ~6h se descarta.
     expect(series[0].points).toHaveLength(1);
@@ -150,7 +162,7 @@ describe('buildResponseTrend', () => {
   });
 
   it('atribuye la respuesta a quien responde al dividir por autor', () => {
-    const series = buildResponseTrend(respPoints, 'day', true, 180);
+    const series = buildResponseTrend(respPoints, 'day', 'author', 180);
     const keys = series.map((s) => s.key).sort();
     expect(keys).toEqual(['Ana', 'Luis']);
   });

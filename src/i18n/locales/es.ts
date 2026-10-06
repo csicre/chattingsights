@@ -1,13 +1,13 @@
 export const es = {
   app: {
     name: 'ChattingSights',
-    tagline: 'Descubre los secretos de tus conversaciones',
+    tagline: 'Analiza tus chats de WhatsApp',
   },
   nav: {
     language: 'Idioma',
   },
   landing: {
-    title: 'Analiza tus chats de WhatsApp',
+    title: 'Descubre los secretos de tus conversaciones de WhatsApp',
     subtitle:
       'Sube el export de una conversación y descubre patrones, emociones y hábitos. Todo se procesa en tu navegador: tus mensajes nunca salen de tu dispositivo.',
     cta: 'Empezar ahora',
@@ -139,6 +139,7 @@ export const es = {
   },
   time: {
     title: 'Agrupación temporal',
+    points: 'Puntos',
     day: 'Día',
     week: 'Semana',
     month: 'Mes',
@@ -147,7 +148,9 @@ export const es = {
   legend: {
     title: 'Leyenda',
     byPerson: 'Persona',
-    hint: 'Si se activa, cada persona es una serie con su propio color.',
+    byWeekday: 'Día de la semana',
+    series: 'serie',
+    hint: 'Si se activa, cada categoría es una serie con su propio color.',
     allSeries: 'Todos',
   },
   tabs: {
@@ -231,6 +234,7 @@ export const es = {
     minutesUnit: 'minutos',
     ofTotal: 'del total',
     emojiLegend: 'Nº de usos',
+    pointClickHint: 'Clic para ver el mensaje',
   },
   detail: {
     title: 'Detalle del mensaje',

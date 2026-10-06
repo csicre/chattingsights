@@ -2,7 +2,7 @@
    ChattingSights — Sistema de estilo
    Inspirado en el dashboard de ods_ihm-kiro: tema oscuro con variables CSS como
    FUENTE ÚNICA de color (las lee también d3 vía src/core/theme.ts). Acento en
-   el teal de WhatsApp. El tema claro se activa con :root[data-theme="light"].
+   el teal de WhatsApp. La app es siempre de tema oscuro.
    ========================================================================== */
 :root {
   /* Paleta base (layout HTML) */
@@ -47,35 +47,8 @@
   --sidebar-w: 260px;
 }
 
-:root[data-theme='light'] {
-  --bg: #f4f6fb;
-  --panel: #ffffff;
-  --panel-2: #eef2f9;
-  --text: #1b2333;
-  --muted: #5b6b85;
-  --accent: #128c7e;
-  --accent-2: #075e54;
-  --border: #d3dbe8;
-
-  --chart-axis-line: #b8c2d6;
-  --chart-axis-text: #5b6b85;
-  --chart-axis-label: #5b6b85;
-  --chart-grid: #98a5bd;
-  --chart-point-stroke: #ffffff;
-  --chart-tooltip-bg: #1b2333;
-
-  --sem-good: #1f9d6b;
-  --sem-warn: #c8901f;
-  --sem-bad: #cc3f31;
-  --sem-info: #2563eb;
-  --sem-neutral: #5b6b85;
-
-  --shadow: 0 6px 20px rgba(27, 35, 51, 0.15);
-  --on-accent: #ffffff;
-}
-
 html {
-  color-scheme: dark light;
+  color-scheme: dark;
 }
 
 * {
@@ -128,7 +101,6 @@ body {
   gap: 10px;
 }
 
-.theme-toggle,
 .lang-toggle,
 .lang-select {
   background: var(--panel-2);
@@ -140,7 +112,6 @@ body {
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
 }
-.theme-toggle:hover,
 .lang-toggle:hover,
 .lang-select:hover {
   border-color: var(--accent);
@@ -252,9 +223,6 @@ body {
 }
 .field input[type='date']:hover {
   border-color: var(--accent);
-}
-:root[data-theme='light'] .field input[type='date'] {
-  color-scheme: light;
 }
 
 .field-block {

@@ -3,7 +3,7 @@ import * as d3 from 'd3';
 import { useTranslation } from 'react-i18next';
 import { theme, makeColorScale } from '@/core/theme';
 import { useResizeObserver } from '@/hooks/useResizeObserver';
-import type { TrendSeries } from '@/core/types';
+import type { SeriesSplit, TrendSeries } from '@/core/types';
 import { InfoTip } from './InfoTip';
 import { Legend } from './Legend';
 
@@ -24,7 +24,7 @@ const MARGIN = { top: 12, right: 16, bottom: 24, left: 44 };
 interface TrendPanelProps {
   series: TrendSeries[];
   categories: string[];
-  splitByAuthor: boolean;
+  split: SeriesSplit;
   title: string;
   info: string;
   unit: string;
@@ -35,7 +35,7 @@ interface TrendPanelProps {
 export function TrendPanel({
   series,
   categories,
-  splitByAuthor,
+  split,
   title,
   info,
   unit,
@@ -83,7 +83,8 @@ export function TrendPanel({
       .range([INNER_H, 0]);
 
     const color = makeColorScale(categories);
-    const lineColor = splitByAuthor ? null : theme.color.accent;
+    const isSplit = split !== 'none';
+    const lineColor = isSplit ? null : theme.color.accent;
 
     gXAxis.call(d3.axisBottom(x).ticks(5).tickSizeOuter(0) as never);
     gYAxis.call(d3.axisLeft(y).ticks(4).tickSizeOuter(0) as never);
@@ -159,8 +160,10 @@ export function TrendPanel({
           .style('top', `${event.clientY + 14}px`)
           .html(
             `<div class="tt-title">${fmtDate(h.t)}</div>` +
-              (splitByAuthor && h.key !== 'all'
-                ? `<div class="tt-row"><span>serie</span><span>${h.key}</span></div>`
+              (isSplit && h.key !== 'all'
+                ? `<div class="tt-row"><span>${t('legend.series')}</span><span>${
+                    split === 'weekday' ? t(`weekday.${h.key}`) : h.key
+                  }</span></div>`
                 : '') +
               `<div class="tt-row"><span>${unit}</span><span>${fmtVal(h.value)}</span></div>`,
           );
@@ -171,7 +174,7 @@ export function TrendPanel({
       svg.on('mousemove.tip', null).on('mouseleave.tip', null);
       svg.selectAll('*').remove();
     };
-  }, [series, categories, splitByAuthor, unit, decimals, hostWidth, INNER_W, INNER_H, WIDTH, HEIGHT]);
+  }, [series, categories, split, unit, decimals, t, hostWidth, INNER_W, INNER_H, WIDTH, HEIGHT]);
 
   return (
     <div className={fullWidth ? 'chart-panel' : 'aux-panel'} ref={containerRef}>
@@ -192,7 +195,7 @@ export function TrendPanel({
           ) : (
             <svg ref={svgRef} role="img" aria-label={title} />
           )}
-          <Legend categories={categories} splitByAuthor={splitByAuthor} />
+          <Legend categories={categories} split={split} />
         </>
       )}
       <div ref={tooltipRef} className="tooltip" style={{ display: 'none' }} />
