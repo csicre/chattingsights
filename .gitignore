@@ -1,0 +1,56 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Build output
+dist
+dist-ssr
+*.local
+
+# Environment variables (NEVER commit secrets)
+.env
+.env.local
+.env.*.local
+
+# Editor / OS
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+Thumbs.db
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Vercel
+.vercel
+
+# Test coverage
+coverage
+
+# Local npm workaround (strict-ssl por certificado interceptor local)
+.npmrc
+
+# Logs y archivos temporales de verificación
+npm-install*.log
+build.txt
+test.txt
+tc.txt
+tc2.txt
+tcheck.txt
+verify*.txt
+vtest*.txt
+vbuild.txt
+tabs_*.txt
+leg_*.txt
+typecheck.log
