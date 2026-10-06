@@ -53,7 +53,6 @@ export function FiltersPanel({
   ];
 
   const timeOptions: { id: TimeGroup; label: string }[] = [
-    { id: 'points', label: t('time.points') },
     { id: 'day', label: t('time.day') },
     { id: 'week', label: t('time.week') },
     { id: 'month', label: t('time.month') },
