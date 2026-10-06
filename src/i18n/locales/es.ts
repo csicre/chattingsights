@@ -117,6 +117,13 @@ export const es = {
     privacy: 'Tus datos nunca salen de tu navegador.',
     rights: 'Todos los derechos reservados.',
   },
+  consent: {
+    message:
+      'Usamos Google Analytics para entender el uso de la web mediante cookies. Tus chats se siguen procesando solo en tu navegador. ¿Aceptas la analítica?',
+    accept: 'Aceptar',
+    reject: 'Rechazar',
+    learnMore: 'Más información',
+  },
   common: {
     back: 'Volver',
     retry: 'Reintentar',

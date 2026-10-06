@@ -8,6 +8,7 @@ import { SUPPORTED_UI_LANGUAGES } from './i18n';
 import { useApp } from './state/AppContext';
 import { clearCheckoutParams, readCheckoutReturn } from './services/checkout';
 import { trackPageView } from './services/analytics';
+import { ConsentBanner } from './components/ConsentBanner';
 
 type View = 'landing' | 'upload';
 
@@ -16,6 +17,9 @@ export function App() {
   const { report, unlock, selectedMessageId } = useApp();
   const [view, setView] = useState<View>('landing');
   const [toast, setToast] = useState<string | null>(null);
+  // Se incrementa cuando el usuario acepta la analítica, para re-registrar la
+  // vista actual una vez GA ya está cargado.
+  const [consentTick, setConsentTick] = useState(0);
 
   // Al volver de Stripe Checkout, confirma el desbloqueo.
   useEffect(() => {
@@ -51,7 +55,7 @@ export function App() {
       title = 'Subir chat';
     }
     trackPageView(path, title);
-  }, [report, selectedMessageId, view]);
+  }, [report, selectedMessageId, view, consentTick]);
 
   // Decide qué vista principal mostrar.
   let content;
@@ -104,6 +108,8 @@ export function App() {
       </footer>
 
       {toast && <div className="toast">{toast}</div>}
+
+      <ConsentBanner onAccept={() => setConsentTick((n) => n + 1)} />
     </div>
   );
 }

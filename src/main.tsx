@@ -5,9 +5,11 @@ import './styles/global.css';
 import './styles/theme.css';
 import { App } from './App';
 import { AppProvider } from './state/AppContext';
-import { initAnalytics } from './services/analytics';
+import { initAnalyticsIfConsented } from './services/analytics';
 
-initAnalytics();
+// Solo carga GA si el usuario ya dio su consentimiento en una visita previa.
+// Si no, el banner de consentimiento (ConsentBanner) pedirá la decisión.
+initAnalyticsIfConsented();
 
 const rootEl = document.getElementById('root');
 if (!rootEl) throw new Error('No se encontró el elemento #root');

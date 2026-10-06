@@ -317,3 +317,41 @@ button {
   height: 10px;
   border-radius: 50%;
 }
+
+/* ---- Banner de consentimiento de analítica ---- */
+.consent-banner {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(680px, calc(100% - 32px));
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px 20px;
+  z-index: 100;
+}
+
+.consent-text {
+  flex: 1 1 320px;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.consent-actions {
+  display: flex;
+  gap: 10px;
+  flex: 0 0 auto;
+}
+
+.consent-btn {
+  padding: 9px 18px;
+  font-size: 14px;
+}

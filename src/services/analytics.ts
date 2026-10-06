@@ -13,6 +13,11 @@
 
 const GA_ID = import.meta.env.VITE_GA_ID as string | undefined;
 
+/** Clave de localStorage donde se guarda la decisión de consentimiento. */
+const CONSENT_KEY = 'chattingsights:analytics-consent';
+
+type ConsentValue = 'granted' | 'denied';
+
 type GtagArgs =
   | [command: 'js', date: Date]
   | [command: 'config', targetId: string, config?: Record<string, unknown>]
@@ -77,4 +82,50 @@ export function trackPageView(path: string, title?: string): void {
 export function trackEvent(name: string, params?: Record<string, unknown>): void {
   if (!initialized || !analyticsEnabled()) return;
   window.gtag('event', name, params);
+}
+
+// ---- Consentimiento ----------------------------------------------------
+//
+// GA no se carga hasta que el usuario acepta explícitamente. La decisión se
+// guarda en localStorage para no volver a preguntar en cada visita.
+
+/** Lee la decisión guardada, o `null` si el usuario aún no ha decidido. */
+export function getConsent(): ConsentValue | null {
+  if (typeof localStorage === 'undefined') return null;
+  const value = localStorage.getItem(CONSENT_KEY);
+  return value === 'granted' || value === 'denied' ? value : null;
+}
+
+/**
+ * ¿Debemos mostrar el banner de consentimiento? Solo si la analítica está
+ * configurada (hay ID) y el usuario todavía no ha tomado una decisión.
+ */
+export function shouldAskForConsent(): boolean {
+  return analyticsEnabled() && getConsent() === null;
+}
+
+/** El usuario acepta: guarda la decisión e inicializa GA inmediatamente. */
+export function grantConsent(): void {
+  if (typeof localStorage !== 'undefined') {
+    localStorage.setItem(CONSENT_KEY, 'granted');
+  }
+  initAnalytics();
+}
+
+/** El usuario rechaza: guarda la decisión. GA no se carga. */
+export function denyConsent(): void {
+  if (typeof localStorage !== 'undefined') {
+    localStorage.setItem(CONSENT_KEY, 'denied');
+  }
+}
+
+/**
+ * Inicializa la analítica solo si el usuario ya había dado su consentimiento
+ * en una visita anterior. Pensado para llamarse al arrancar la app. Si no hay
+ * consentimiento previo, no hace nada (el banner pedirá la decisión).
+ */
+export function initAnalyticsIfConsented(): void {
+  if (getConsent() === 'granted') {
+    initAnalytics();
+  }
 }

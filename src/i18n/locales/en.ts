@@ -119,6 +119,13 @@ export const en: TranslationSchema = {
     privacy: 'Your data never leaves your browser.',
     rights: 'All rights reserved.',
   },
+  consent: {
+    message:
+      'We use Google Analytics to understand site usage via cookies. Your chats are still processed only in your browser. Do you accept analytics?',
+    accept: 'Accept',
+    reject: 'Reject',
+    learnMore: 'Learn more',
+  },
   common: {
     back: 'Back',
     retry: 'Retry',
