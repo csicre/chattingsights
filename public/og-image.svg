@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <!-- Fondo con el tema oscuro de la app -->
+  <rect width="1200" height="630" fill="#0f1420"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <defs>
+    <radialGradient id="glow" cx="78%" cy="28%" r="60%">
+      <stop offset="0%" stop-color="#25d366" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#25d366" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Logo: burbuja de chat con mini barras, coherente con el favicon -->
+  <g transform="translate(96 96) scale(2.1)">
+    <path d="M32 6a26 26 0 1 0 0 52c3.1 0 6-.5 8.8-1.6L54 60l-2.4-12.2A26 26 0 0 0 32 6z" fill="#25d366"/>
+    <rect x="22" y="29" width="5" height="10" rx="2.5" fill="#fff"/>
+    <rect x="29.5" y="23" width="5" height="16" rx="2.5" fill="#fff"/>
+    <rect x="37" y="32" width="5" height="7" rx="2.5" fill="#fff"/>
+  </g>
+
+  <!-- Nombre de marca -->
+  <text x="232" y="168" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="56" font-weight="700" fill="#e6ebf5">ChattingSights</text>
+
+  <!-- Titular -->
+  <text x="96" y="360" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="72" font-weight="800" fill="#e6ebf5">Analiza tus chats de</text>
+  <text x="96" y="448" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="72" font-weight="800" fill="#25d366">WhatsApp</text>
+
+  <!-- Subtítulo / propuesta de valor -->
+  <text x="96" y="528" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="34" font-weight="400" fill="#8b97ad">Patrones, emojis y emociones. 100% privado, en tu navegador.</text>
+</svg>
