@@ -50,6 +50,8 @@ En **Project Settings → Environment Variables**, añade:
 | `PUBLIC_SITE_URL` | `https://chattingsights.com` | Production |
 | `VITE_REPORT_PRICE_CENTS` | `499` | Production, Preview, Development |
 | `VITE_REPORT_CURRENCY` | `eur` | Production, Preview, Development |
+| `VITE_GA_ID` | `G-XXXXXXXXXX` | Production (Preview si quieres medir) |
+| `VITE_GSC_VERIFICATION` | *(solo si verificas por meta tag)* | Production |
 
 > Las variables con prefijo `VITE_` se incrustan en el bundle del cliente (solo
 > datos no sensibles). Las demás son solo de servidor.
@@ -95,6 +97,60 @@ Despliega el proyecto.
 - El webhook verifica la firma con `STRIPE_WEBHOOK_SECRET`; sin firma válida, se
   rechaza la petición.
 - El informe y la conversación nunca salen del navegador del usuario.
+
+## 9. Google Analytics 4
+
+El sitio usa GA4 (gtag.js) con consentimiento previo y Consent Mode v2.
+
+1. En [Google Analytics](https://analytics.google.com/), crea una propiedad GA4
+   y un flujo de datos **Web** para `https://chattingsights.com`.
+2. Copia el **ID de medición** (`G-XXXXXXXXXX`).
+3. Guárdalo como `VITE_GA_ID` en Vercel (Production; también Preview si quieres
+   medir los despliegues de prueba). Vuelve a desplegar.
+
+Cómo se comporta:
+
+- No se carga ningún script hasta que el usuario **acepta** el banner de
+  consentimiento. Si lo rechaza, GA no se carga; la decisión se recuerda en
+  `localStorage`.
+- La app React registra **vistas de página virtuales** (SPA) y eventos del
+  funnel: `view_example`, `start_upload`, `upload_chat`, `analysis_success`,
+  `analysis_error`, y del embudo de pago `begin_checkout`, `purchase` (con
+  `value`/`currency`) y `checkout_cancelled`.
+- Las **guías estáticas** (`/guia/*.html`) comparten el mismo ID y el mismo
+  consentimiento (misma clave de `localStorage`). El ID se inyecta en el build
+  con `scripts/inject-ga.mjs` reemplazando el placeholder `__GA_ID__` en
+  `dist/guia/analytics.js`. Sin `VITE_GA_ID`, el placeholder queda intacto y no
+  se carga nada.
+
+> Marca `purchase` (y opcionalmente `begin_checkout`) como **conversión** en
+> GA4 → Administrar → Eventos para medir el embudo de pago.
+
+## 10. Google Search Console
+
+Verifica la propiedad para enviar el sitemap y seguir el rendimiento en búsqueda.
+
+**Opción recomendada — propiedad de Dominio (DNS TXT).** Cubre `www`/sin-`www`
+y http/https de una vez, y es la más duradera.
+
+1. En [Search Console](https://search.google.com/search-console) → **Añadir
+   propiedad → Dominio**, escribe `chattingsights.com`.
+2. Copia el registro **TXT** que te da Google.
+3. Añádelo en el DNS del dominio (si el DNS está en Vercel: **Project Settings →
+   Domains → el dominio → DNS Records → Add**, tipo `TXT`, nombre `@`).
+4. Espera la propagación y pulsa **Verificar**.
+
+**Opción alternativa — propiedad de prefijo de URL (meta tag).** Útil si solo
+quieres medir `https://chattingsights.com/`.
+
+1. En Search Console → **Añadir propiedad → Prefijo de URL**, elige el método
+   **Etiqueta HTML** y copia el valor del atributo `content`.
+2. Guárdalo como `VITE_GSC_VERIFICATION` en Vercel y vuelve a desplegar. El
+   plugin de Vite inyecta el `<meta name="google-site-verification">` en el
+   `<head>` solo cuando esta variable está definida.
+
+**Enviar el sitemap (ambas opciones).** En Search Console → **Sitemaps**, añade
+`https://chattingsights.com/sitemap.xml`. El `robots.txt` ya lo referencia.
 
 ## Limitación del modelo de gating
 
