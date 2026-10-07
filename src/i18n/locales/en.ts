@@ -140,7 +140,11 @@ export const en: TranslationSchema = {
   footer: {
     privacy: 'Your data never leaves your browser.',
     rights: 'All rights reserved.',
-    guideCouple: 'Guide: analyze your WhatsApp chat with your partner',
+    guidesLabel: 'Guides',
+    guideCouple: 'Analyze your chat with your partner',
+    guideGroup: 'Analyze a WhatsApp group',
+    guideWork: 'Analyze your work group',
+    guideSchool: 'Analyze the school parents group',
   },
   consent: {
     message:

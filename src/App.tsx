@@ -154,11 +154,30 @@ export function App() {
         <p style={{ margin: 0, color: 'var(--muted)', fontSize: 13 }}>
           🔒 {t('footer.privacy')}
         </p>
-        <p style={{ margin: '8px 0 0', fontSize: 13 }}>
+        <nav
+          aria-label={t('footer.guidesLabel')}
+          style={{
+            margin: '8px 0 0',
+            fontSize: 13,
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '4px 16px',
+            justifyContent: 'center',
+          }}
+        >
           <a href="/guia/analizar-chat-pareja.html" style={{ color: 'var(--muted)' }}>
             {t('footer.guideCouple')}
           </a>
-        </p>
+          <a href="/guia/analizar-grupo-whatsapp.html" style={{ color: 'var(--muted)' }}>
+            {t('footer.guideGroup')}
+          </a>
+          <a href="/guia/analizar-grupo-trabajo.html" style={{ color: 'var(--muted)' }}>
+            {t('footer.guideWork')}
+          </a>
+          <a href="/guia/analizar-grupo-padres-colegio.html" style={{ color: 'var(--muted)' }}>
+            {t('footer.guideSchool')}
+          </a>
+        </nav>
       </footer>
 
       {toast && <div className="toast">{toast}</div>}

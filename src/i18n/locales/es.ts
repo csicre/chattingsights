@@ -138,7 +138,11 @@ export const es = {
   footer: {
     privacy: 'Tus datos nunca salen de tu navegador.',
     rights: 'Todos los derechos reservados.',
-    guideCouple: 'Guía: analizar el chat de WhatsApp con tu pareja',
+    guidesLabel: 'Guías',
+    guideCouple: 'Analizar el chat con tu pareja',
+    guideGroup: 'Analizar un grupo de WhatsApp',
+    guideWork: 'Analizar el grupo del trabajo',
+    guideSchool: 'Analizar el grupo de padres del colegio',
   },
   consent: {
     message:
