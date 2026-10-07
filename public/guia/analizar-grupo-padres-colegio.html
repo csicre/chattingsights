@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0f1420" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <title>Analizar el grupo de padres del colegio: quién escribe más, quién satura el chat y a qué horas se mueve</title>
+    <meta
+      name="description"
+      content="Descubre las estadísticas del grupo de WhatsApp de padres del colegio: quién escribe más, quién satura el grupo con mensajes, en qué horas se mueve y quién inicia las conversaciones. Gratis y privado, sin que los mensajes salgan del navegador."
+    />
+    <link rel="canonical" href="https://chattingsights.com/guia/analizar-grupo-padres-colegio.html" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="ChattingSights" />
+    <meta property="og:url" content="https://chattingsights.com/guia/analizar-grupo-padres-colegio.html" />
+    <meta property="og:title" content="Analizar el grupo de padres del colegio: quién escribe más y quién satura el chat" />
+    <meta
+      property="og:description"
+      content="Quién escribe más, quién satura el grupo y cuándo se mueve el chat de padres del colegio. Analízalo gratis y en privado."
+    />
+    <meta property="og:image" content="https://chattingsights.com/og-image.png" />
+    <meta property="og:locale" content="es_ES" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Analizar el grupo de padres del colegio" />
+    <meta
+      name="twitter:description"
+      content="Quién escribe más, quién satura el grupo y cuándo se mueve el chat. Gratis y privado."
+    />
+    <meta name="twitter:image" content="https://chattingsights.com/og-image.png" />
+
+    <!-- Datos estructurados: artículo + preguntas frecuentes -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Analizar el grupo de padres del colegio: quién escribe más, quién satura el chat y a qué horas se mueve",
+        "description": "Guía para interpretar las estadísticas del grupo de WhatsApp de padres del colegio: participación de cada persona, mensajes que saturan el chat, iniciativa, horarios de actividad y emojis.",
+        "inLanguage": "es",
+        "mainEntityOfPage": "https://chattingsights.com/guia/analizar-grupo-padres-colegio.html",
+        "author": { "@type": "Organization", "name": "ChattingSights" },
+        "publisher": { "@type": "Organization", "name": "ChattingSights" }
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "¿Es privado analizar el grupo de padres del colegio?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Sí. En ChattingSights todo el análisis ocurre dentro de tu navegador. El archivo del grupo no se sube a ningún servidor ni se guarda: los mensajes no salen de tu dispositivo."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Qué puedo saber del grupo de padres?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Quién escribe más y quién satura el grupo con mensajes, quién inicia las conversaciones, las horas y días con más actividad, los emojis y palabras más usados y el reparto de mensajes entre todas las familias del grupo."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Puedo ver quién satura el grupo con más mensajes?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Sí. El ranking de participación muestra el número de mensajes de cada persona, así que es fácil ver quién concentra gran parte de la conversación y quién apenas escribe."
+            }
+          }
+        ]
+      }
+    </script>
+
+    <style>
+      :root {
+        --bg: #0f1420;
+        --surface: #182031;
+        --text: #e6ebf5;
+        --muted: #8b97ad;
+        --green: #25d366;
+        --border: #2a3651;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.65;
+        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      }
+      .wrap { max-width: 760px; margin: 0 auto; padding: 24px 20px 64px; }
+      header.site {
+        display: flex; align-items: center; gap: 10px;
+        padding: 16px 0; font-weight: 700;
+      }
+      header.site img { display: block; }
+      a { color: var(--green); }
+      h1 { font-size: clamp(28px, 5vw, 40px); line-height: 1.2; margin: 24px 0 8px; }
+      h2 { font-size: 24px; margin: 40px 0 10px; }
+      h3 { font-size: 19px; margin: 28px 0 6px; }
+      p, li { color: #d4dbea; }
+      .lead { font-size: 19px; color: var(--muted); }
+      .muted { color: var(--muted); }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 18px 20px;
+        margin: 20px 0;
+      }
+      .cta {
+        display: inline-block;
+        background: var(--green);
+        color: #04210f;
+        font-weight: 700;
+        text-decoration: none;
+        padding: 14px 28px;
+        border-radius: 999px;
+        margin: 8px 0;
+      }
+      .cta-wrap { text-align: center; margin: 36px 0; }
+      ol.steps li { margin-bottom: 8px; }
+      .note {
+        border-left: 3px solid var(--green);
+        padding: 4px 0 4px 16px;
+        color: var(--muted);
+        font-size: 15px;
+      }
+      .related {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 18px 20px;
+        margin: 32px 0;
+      }
+      .related h2 { margin: 0 0 10px; font-size: 20px; }
+      .related ul { margin: 0; padding-left: 18px; }
+      .related li { margin-bottom: 6px; }
+      footer.site {
+        border-top: 1px solid var(--border);
+        margin-top: 48px; padding-top: 20px;
+        color: var(--muted); font-size: 14px;
+      }
+      details { border-bottom: 1px solid var(--border); padding: 12px 0; }
+      summary { cursor: pointer; font-weight: 600; }
+      details p { margin: 10px 0 0; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="site">
+        <img src="/favicon.svg" width="32" height="32" alt="ChattingSights" />
+        <span>ChattingSights</span>
+      </header>
+
+      <article>
+        <h1>Qué dice el grupo de padres del colegio: quién escribe más y quién satura el chat</h1>
+        <p class="lead">
+          El grupo de padres del colegio es casi un género en sí mismo: los
+          doscientos mensajes sobre el disfraz, quien pregunta lo que ya se ha
+          dicho tres veces y quien nunca contesta. Toda esa actividad queda
+          registrada con fecha y hora, y puedes verla con datos en lugar de
+          sensaciones. Aquí te explicamos qué puedes medir y cómo hacerlo gratis,
+          sin que los mensajes salgan de tu dispositivo.
+        </p>
+
+        <div class="cta-wrap">
+          <a class="cta" href="/">Analizar nuestro grupo gratis →</a>
+          <p class="muted" style="font-size: 14px">Se procesa en tu navegador · sin registro</p>
+        </div>
+
+        <h2>Qué puedes descubrir del grupo de padres</h2>
+        <p>
+          El export de un grupo es un registro con fecha, hora y autor de cada
+          mensaje. A partir de ahí se calculan métricas objetivas que cuentan cómo
+          funciona el grupo y qué papel juega cada familia. Estas son las más
+          interesantes.
+        </p>
+
+        <h3>1. Quién escribe más (y quién satura el chat)</h3>
+        <p>
+          El reparto de mensajes y palabras entre todos los integrantes. El ranking
+          de participación deja clarísimo quién concentra buena parte de la
+          conversación frente a quien apenas suelta un mensaje al trimestre. La
+          métrica estrella para entender por qué el grupo tiene mil mensajes sin
+          leer.
+        </p>
+
+        <h3>2. Quién inicia las conversaciones</h3>
+        <p>
+          Cuántas veces es cada persona quien abre un tema nuevo después de un rato
+          de silencio. Revela quién pone sobre la mesa los asuntos (excursiones,
+          cumpleaños, dudas de deberes) frente a quien solo responde.
+        </p>
+
+        <h3>3. A qué horas y qué días se mueve el grupo</h3>
+        <p>
+          El reparto de mensajes por hora del día y por día de la semana dibuja el
+          ritmo del grupo: si se dispara a la salida del colegio, por la noche
+          cuando los peques ya duermen o los domingos antes de la semana. Uno de los
+          datos más visuales.
+        </p>
+
+        <h3>4. Emojis y palabras más usados</h3>
+        <p>
+          Qué palabras se repiten más (nombres de profes, «reunión», «excursión»,
+          «deberes») y qué emojis dominan. Da una foto rápida de qué temas acaparan
+          el grupo a lo largo del curso.
+        </p>
+
+        <div class="note">
+          Esto son estadísticas de comunicación, pensadas como curiosidad y para
+          echarse unas risas en el grupo. No son un ranking para señalar a nadie:
+          solo describen cómo se reparten los mensajes entre las familias.
+        </div>
+
+        <h2>Cómo exportar el grupo de WhatsApp de padres (paso a paso)</h2>
+        <p>Tarda un par de minutos y funciona igual en Android y iPhone.</p>
+        <ol class="steps">
+          <li>Abre el grupo de padres en WhatsApp.</li>
+          <li>Entra en el menú del grupo (los tres puntos en Android, o el nombre del grupo en iPhone).</li>
+          <li>Elige <strong>«Exportar chat»</strong>.</li>
+          <li>Selecciona <strong>«Sin archivos multimedia»</strong>: solo necesitas el texto.</li>
+          <li>Guarda el archivo <strong>.txt</strong> y súbelo en ChattingSights.</li>
+        </ol>
+
+        <div class="card">
+          <strong>100% privado.</strong>
+          <p style="margin: 6px 0 0">
+            El análisis ocurre dentro de tu navegador. El archivo no se sube a
+            ningún servidor ni se almacena: las conversaciones del grupo no salen de
+            tu dispositivo. Importante cuando el grupo trata temas de menores.
+          </p>
+        </div>
+
+        <div class="cta-wrap">
+          <a class="cta" href="/">Subir nuestro grupo y ver el informe →</a>
+        </div>
+
+        <h2>Preguntas frecuentes</h2>
+        <details>
+          <summary>¿Es privado analizar el grupo de padres del colegio?</summary>
+          <p>
+            Sí. Todo el análisis se hace en tu navegador. El archivo del grupo no se
+            sube a ningún servidor ni se guarda, así que los mensajes no salen de tu
+            dispositivo.
+          </p>
+        </details>
+        <details>
+          <summary>¿Puedo ver quién satura el grupo con más mensajes?</summary>
+          <p>
+            Sí. El ranking de participación muestra el número de mensajes de cada
+            persona, así que es fácil ver quién concentra gran parte de la
+            conversación y quién apenas escribe.
+          </p>
+        </details>
+        <details>
+          <summary>¿Funciona con grupos grandes?</summary>
+          <p>
+            Sí. El análisis admite conversaciones con muchos participantes y calcula
+            las métricas por cada persona, para comparar quién participa más y quién
+            casi no interviene.
+          </p>
+        </details>
+        <details>
+          <summary>¿Necesito instalar algo o registrarme?</summary>
+          <p>
+            No. Solo exportas el grupo como archivo .txt y lo subes en la web. No
+            hace falta instalar aplicaciones ni crear una cuenta.
+          </p>
+        </details>
+      </article>
+
+      <nav class="related">
+        <h2>Guías relacionadas</h2>
+        <ul>
+          <li><a href="/guia/analizar-grupo-whatsapp.html">Analizar un grupo de WhatsApp: quién participa y quién lleva tiempo sin hablar</a></li>
+          <li><a href="/guia/analizar-grupo-trabajo.html">Analizar el grupo de WhatsApp del trabajo</a></li>
+          <li><a href="/guia/analizar-chat-pareja.html">Analizar el chat de WhatsApp con tu pareja</a></li>
+        </ul>
+      </nav>
+
+      <footer class="site">
+        <p>
+          <a href="/">ChattingSights</a> — analiza tus chats de WhatsApp con
+          privacidad total. Tus datos nunca salen de tu navegador.
+        </p>
+      </footer>
+    </div>
+  </body>
+</html>

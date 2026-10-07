@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0f1420" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <title>Analizar el grupo de WhatsApp del trabajo: quién escribe fuera de horario, quién participa y cuándo se mueve</title>
+    <meta
+      name="description"
+      content="Descubre las estadísticas del grupo de WhatsApp de tu trabajo: quién escribe más, quién manda mensajes fuera de horario, en qué horas y días se mueve y quién inicia las conversaciones. Gratis y privado, sin que los mensajes salgan del navegador."
+    />
+    <link rel="canonical" href="https://chattingsights.com/guia/analizar-grupo-trabajo.html" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="ChattingSights" />
+    <meta property="og:url" content="https://chattingsights.com/guia/analizar-grupo-trabajo.html" />
+    <meta property="og:title" content="Analizar el grupo de WhatsApp del trabajo: horarios, participación e iniciativa" />
+    <meta
+      property="og:description"
+      content="Quién escribe fuera de horario, quién participa más y cuándo se mueve el grupo del trabajo. Analízalo gratis y en privado."
+    />
+    <meta property="og:image" content="https://chattingsights.com/og-image.png" />
+    <meta property="og:locale" content="es_ES" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Analizar el grupo de WhatsApp del trabajo" />
+    <meta
+      name="twitter:description"
+      content="Quién escribe fuera de horario, quién participa más y cuándo se mueve el grupo. Gratis y privado."
+    />
+    <meta name="twitter:image" content="https://chattingsights.com/og-image.png" />
+
+    <!-- Datos estructurados: artículo + preguntas frecuentes -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Analizar el grupo de WhatsApp del trabajo: quién escribe fuera de horario, quién participa y cuándo se mueve",
+        "description": "Guía para interpretar las estadísticas del grupo de WhatsApp del trabajo: participación de cada persona, mensajes fuera de horario, iniciativa, horarios de actividad y tiempos de respuesta.",
+        "inLanguage": "es",
+        "mainEntityOfPage": "https://chattingsights.com/guia/analizar-grupo-trabajo.html",
+        "author": { "@type": "Organization", "name": "ChattingSights" },
+        "publisher": { "@type": "Organization", "name": "ChattingSights" }
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "¿Es privado analizar el grupo del trabajo?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Sí. En ChattingSights todo el análisis ocurre dentro de tu navegador. El archivo del grupo no se sube a ningún servidor ni se guarda: los mensajes no salen de tu dispositivo."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Qué puedo saber del grupo de trabajo?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Quién participa más y quién menos, cuántos mensajes se envían fuera del horario laboral y los fines de semana, quién inicia las conversaciones, los tiempos de respuesta, las horas y días con más actividad y las palabras más repetidas."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Puedo ver cuántos mensajes se mandan fuera de horario?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Sí. El reparto de mensajes por hora del día y por día de la semana permite ver con claridad cuánta actividad ocurre fuera del horario laboral y durante el fin de semana."
+            }
+          }
+        ]
+      }
+    </script>
+
+    <style>
+      :root {
+        --bg: #0f1420;
+        --surface: #182031;
+        --text: #e6ebf5;
+        --muted: #8b97ad;
+        --green: #25d366;
+        --border: #2a3651;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.65;
+        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      }
+      .wrap { max-width: 760px; margin: 0 auto; padding: 24px 20px 64px; }
+      header.site {
+        display: flex; align-items: center; gap: 10px;
+        padding: 16px 0; font-weight: 700;
+      }
+      header.site img { display: block; }
+      a { color: var(--green); }
+      h1 { font-size: clamp(28px, 5vw, 40px); line-height: 1.2; margin: 24px 0 8px; }
+      h2 { font-size: 24px; margin: 40px 0 10px; }
+      h3 { font-size: 19px; margin: 28px 0 6px; }
+      p, li { color: #d4dbea; }
+      .lead { font-size: 19px; color: var(--muted); }
+      .muted { color: var(--muted); }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 18px 20px;
+        margin: 20px 0;
+      }
+      .cta {
+        display: inline-block;
+        background: var(--green);
+        color: #04210f;
+        font-weight: 700;
+        text-decoration: none;
+        padding: 14px 28px;
+        border-radius: 999px;
+        margin: 8px 0;
+      }
+      .cta-wrap { text-align: center; margin: 36px 0; }
+      ol.steps li { margin-bottom: 8px; }
+      .note {
+        border-left: 3px solid var(--green);
+        padding: 4px 0 4px 16px;
+        color: var(--muted);
+        font-size: 15px;
+      }
+      .related {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 18px 20px;
+        margin: 32px 0;
+      }
+      .related h2 { margin: 0 0 10px; font-size: 20px; }
+      .related ul { margin: 0; padding-left: 18px; }
+      .related li { margin-bottom: 6px; }
+      footer.site {
+        border-top: 1px solid var(--border);
+        margin-top: 48px; padding-top: 20px;
+        color: var(--muted); font-size: 14px;
+      }
+      details { border-bottom: 1px solid var(--border); padding: 12px 0; }
+      summary { cursor: pointer; font-weight: 600; }
+      details p { margin: 10px 0 0; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="site">
+        <img src="/favicon.svg" width="32" height="32" alt="ChattingSights" />
+        <span>ChattingSights</span>
+      </header>
+
+      <article>
+        <h1>Qué dice el grupo del trabajo: participación, horarios y mensajes fuera de hora</h1>
+        <p class="lead">
+          El grupo de WhatsApp del trabajo tiene sus propias reglas no escritas:
+          quien contesta a las once de la noche, quien solo escribe para los
+          avisos y quien lleva el peso de coordinarlo todo. Esos patrones quedan
+          registrados con fecha y hora, y puedes verlos con datos. Aquí te
+          explicamos qué puedes medir y cómo hacerlo gratis, sin que los mensajes
+          salgan de tu dispositivo.
+        </p>
+
+        <div class="cta-wrap">
+          <a class="cta" href="/">Analizar nuestro grupo gratis →</a>
+          <p class="muted" style="font-size: 14px">Se procesa en tu navegador · sin registro</p>
+        </div>
+
+        <h2>Qué puedes descubrir del grupo del trabajo</h2>
+        <p>
+          El export de un grupo es un registro con fecha, hora y autor de cada
+          mensaje. A partir de ahí se calculan métricas objetivas que cuentan cómo
+          se comunica el equipo y qué papel juega cada persona. Estas son las más
+          interesantes en un contexto laboral.
+        </p>
+
+        <h3>1. Quién participa más (y quién menos)</h3>
+        <p>
+          El reparto de mensajes y palabras entre todos los integrantes. Verás el
+          ranking de participación, desde quien coordina y responde a todo hasta
+          quien solo aparece cuando le mencionan. Una foto rápida de cómo se
+          distribuye la carga de comunicación del equipo.
+        </p>
+
+        <h3>2. Cuántos mensajes se mandan fuera de horario</h3>
+        <p>
+          La métrica más reveladora de un grupo de trabajo: el reparto de mensajes
+          por <strong>hora del día y día de la semana</strong>. Deja ver de un
+          vistazo cuánta conversación ocurre fuera del horario laboral y durante el
+          fin de semana. Útil para hablar de desconexión digital con datos
+          encima de la mesa.
+        </p>
+
+        <h3>3. Quién inicia las conversaciones</h3>
+        <p>
+          Cuántas veces es cada persona quien arranca un tema después de un rato de
+          silencio. Revela quién lleva la iniciativa en la coordinación frente a
+          quien solo responde cuando ya hay movimiento.
+        </p>
+
+        <h3>4. Tiempos de respuesta</h3>
+        <p>
+          Cuánto tarda cada persona en contestar y cómo evoluciona. En un equipo da
+          una idea del ritmo de comunicación, aunque conviene leerlo con cabeza: un
+          tiempo de respuesta alto no es malo, muchas veces significa que la gente
+          está centrada en su trabajo y no pendiente del chat.
+        </p>
+
+        <h3>5. Palabras y emojis más usados</h3>
+        <p>
+          Qué temas y expresiones se repiten más y qué emojis dominan. Suele
+          reflejar el tono del equipo: más formal, más distendido o una mezcla
+          según el momento.
+        </p>
+
+        <div class="note">
+          Esto son estadísticas de comunicación, pensadas como curiosidad y para
+          entender la dinámica del equipo. No son una herramienta de evaluación del
+          desempeño ni un control de productividad: solo describen cómo se reparten
+          los mensajes.
+        </div>
+
+        <h2>Cómo exportar el grupo de WhatsApp del trabajo (paso a paso)</h2>
+        <p>Tarda un par de minutos y funciona igual en Android y iPhone.</p>
+        <ol class="steps">
+          <li>Abre el grupo del trabajo en WhatsApp.</li>
+          <li>Entra en el menú del grupo (los tres puntos en Android, o el nombre del grupo en iPhone).</li>
+          <li>Elige <strong>«Exportar chat»</strong>.</li>
+          <li>Selecciona <strong>«Sin archivos multimedia»</strong>: solo necesitas el texto.</li>
+          <li>Guarda el archivo <strong>.txt</strong> y súbelo en ChattingSights.</li>
+        </ol>
+
+        <div class="card">
+          <strong>100% privado.</strong>
+          <p style="margin: 6px 0 0">
+            El análisis ocurre dentro de tu navegador. El archivo no se sube a
+            ningún servidor ni se almacena: las conversaciones del grupo no salen de
+            tu dispositivo. Especialmente importante cuando se trata de un grupo de
+            trabajo.
+          </p>
+        </div>
+
+        <div class="cta-wrap">
+          <a class="cta" href="/">Subir nuestro grupo y ver el informe →</a>
+        </div>
+
+        <h2>Preguntas frecuentes</h2>
+        <details>
+          <summary>¿Es privado analizar el grupo del trabajo?</summary>
+          <p>
+            Sí. Todo el análisis se hace en tu navegador. El archivo del grupo no se
+            sube a ningún servidor ni se guarda, así que los mensajes no salen de tu
+            dispositivo.
+          </p>
+        </details>
+        <details>
+          <summary>¿Puedo ver cuántos mensajes se mandan fuera de horario?</summary>
+          <p>
+            Sí. El reparto de mensajes por hora del día y por día de la semana
+            permite ver con claridad cuánta actividad ocurre fuera del horario
+            laboral y durante el fin de semana.
+          </p>
+        </details>
+        <details>
+          <summary>¿Funciona con grupos grandes?</summary>
+          <p>
+            Sí. El análisis admite conversaciones con muchos participantes y calcula
+            las métricas por cada persona, para comparar quién participa más y quién
+            casi no interviene.
+          </p>
+        </details>
+        <details>
+          <summary>¿Necesito instalar algo o registrarme?</summary>
+          <p>
+            No. Solo exportas el grupo como archivo .txt y lo subes en la web. No
+            hace falta instalar aplicaciones ni crear una cuenta.
+          </p>
+        </details>
+      </article>
+
+      <nav class="related">
+        <h2>Guías relacionadas</h2>
+        <ul>
+          <li><a href="/guia/analizar-grupo-whatsapp.html">Analizar un grupo de WhatsApp: quién participa y quién lleva tiempo sin hablar</a></li>
+          <li><a href="/guia/analizar-grupo-padres-colegio.html">Analizar el grupo de padres del colegio</a></li>
+          <li><a href="/guia/analizar-chat-pareja.html">Analizar el chat de WhatsApp con tu pareja</a></li>
+        </ul>
+      </nav>
+
+      <footer class="site">
+        <p>
+          <a href="/">ChattingSights</a> — analiza tus chats de WhatsApp con
+          privacidad total. Tus datos nunca salen de tu navegador.
+        </p>
+      </footer>
+    </div>
+  </body>
+</html>
