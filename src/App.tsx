@@ -7,7 +7,12 @@ import { MessageDetail } from './components/dash/MessageDetail';
 import { SUPPORTED_UI_LANGUAGES } from './i18n';
 import { useApp } from './state/AppContext';
 import { clearCheckoutParams, readCheckoutReturn } from './services/checkout';
-import { trackPageView, trackEvent } from './services/analytics';
+import {
+  trackPageView,
+  trackEvent,
+  trackPurchase,
+  trackCheckoutCancelled,
+} from './services/analytics';
 import { ConsentBanner } from './components/ConsentBanner';
 import { ExampleBanner } from './components/ExampleBanner';
 import { buildDemoAnalysis } from './core/demoData';
@@ -33,6 +38,10 @@ export function App() {
     if (result === 'paid') {
       unlock();
       setToast(t('paywall.unlocked'));
+      // Conversión del funnel: pago completado con éxito.
+      trackPurchase();
+    } else if (result === 'cancelled') {
+      trackCheckoutCancelled();
     }
     if (result) clearCheckoutParams();
   }, [unlock, t]);

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '@/state/AppContext';
 import { startCheckout } from '@/services/checkout';
+import { trackBeginCheckout } from '@/services/analytics';
 import { formatPrice } from '@/core/format';
 import type { SupportedLanguage } from '@/core/types';
 
@@ -22,6 +23,7 @@ export function Paywall({ lang }: { lang: SupportedLanguage }) {
   const handleUnlock = async () => {
     setError(false);
     setBusy(true);
+    trackBeginCheckout();
     try {
       await startCheckout(lang);
       // startCheckout redirige fuera; si no hay backend (dev), caemos al catch.

@@ -18,10 +18,13 @@ const CONSENT_KEY = 'chattingsights:analytics-consent';
 
 type ConsentValue = 'granted' | 'denied';
 
+type ConsentState = Record<string, 'granted' | 'denied'>;
+
 type GtagArgs =
   | [command: 'js', date: Date]
   | [command: 'config', targetId: string, config?: Record<string, unknown>]
-  | [command: 'event', eventName: string, params?: Record<string, unknown>];
+  | [command: 'event', eventName: string, params?: Record<string, unknown>]
+  | [command: 'consent', subcommand: 'default' | 'update', state: ConsentState];
 
 declare global {
   interface Window {
@@ -57,11 +60,28 @@ export function initAnalytics(): void {
     window.dataLayer.push(args);
   };
 
+  // Consent Mode v2: declaramos el estado por defecto (denegado) ANTES de
+  // configurar GA. Como solo llamamos a initAnalytics() tras el consentimiento,
+  // acto seguido lo actualizamos a 'granted'. Esto deja el modelo de consent
+  // explícito y preparado para los requisitos de la UE/EEE.
+  window.gtag('consent', 'default', {
+    ad_storage: 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied',
+    analytics_storage: 'denied',
+  });
+
   window.gtag('js', new Date());
   window.gtag('config', GA_ID as string, {
     anonymize_ip: true,
     // Controlamos las vistas manualmente porque la app es una SPA.
     send_page_view: false,
+  });
+
+  // El usuario ya aceptó (initAnalytics solo se llama tras el consentimiento),
+  // así que concedemos el almacenamiento de analítica.
+  window.gtag('consent', 'update', {
+    analytics_storage: 'granted',
   });
 }
 
@@ -82,6 +102,38 @@ export function trackPageView(path: string, title?: string): void {
 export function trackEvent(name: string, params?: Record<string, unknown>): void {
   if (!initialized || !analyticsEnabled()) return;
   window.gtag('event', name, params);
+}
+
+// ---- Eventos del funnel de pago (nombres estándar de GA4) --------------
+//
+// Usamos los nombres de evento recomendados por GA4 para e-commerce, así GA
+// los reconoce automáticamente como pasos del embudo de compra.
+
+/** Precio del informe en unidades monetarias (p. ej. 4.99), leído de env. */
+function reportValue(): number {
+  const cents = Number(import.meta.env.VITE_REPORT_PRICE_CENTS ?? '499');
+  return Number.isFinite(cents) ? cents / 100 : 0;
+}
+
+/** El usuario inicia el checkout de Stripe (pulsa desbloquear). */
+export function trackBeginCheckout(): void {
+  trackEvent('begin_checkout', {
+    currency: (import.meta.env.VITE_REPORT_CURRENCY ?? 'eur').toUpperCase(),
+    value: reportValue(),
+  });
+}
+
+/** Conversión: el informe se desbloquea tras un pago correcto. */
+export function trackPurchase(): void {
+  trackEvent('purchase', {
+    currency: (import.meta.env.VITE_REPORT_CURRENCY ?? 'eur').toUpperCase(),
+    value: reportValue(),
+  });
+}
+
+/** El usuario cancela el checkout y vuelve sin pagar. */
+export function trackCheckoutCancelled(): void {
+  trackEvent('checkout_cancelled');
 }
 
 // ---- Consentimiento ----------------------------------------------------
