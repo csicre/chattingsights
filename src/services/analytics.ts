@@ -91,10 +91,15 @@ export function initAnalytics(): void {
  */
 export function trackPageView(path: string, title?: string): void {
   if (!initialized || !analyticsEnabled()) return;
+  // `page_location` debe reflejar la URL REAL del navegador (la app es una SPA
+  // servida siempre desde "/"); usar una URL ficticia como origin+"/dashboard"
+  // ensucia los informes. La pantalla lógica se distingue con page_path/title,
+  // y marcamos la ruta virtual en un parámetro propio para poder segmentar.
   window.gtag('event', 'page_view', {
     page_path: path,
     page_title: title,
-    page_location: window.location.origin + path,
+    page_location: window.location.href,
+    screen_path: path,
   });
 }
 
