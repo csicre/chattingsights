@@ -38,6 +38,10 @@ jobs:
           # Si la variable no existe, el build funciona igual y la analítica
           # queda desactivada.
           VITE_GA_ID: ${{ vars.VITE_GA_ID }}
+          # Token de verificación de Google Search Console (método meta tag).
+          # También es público. Si no existe, el meta no se inyecta y basta con
+          # verificar por otro método (p. ej. archivo HTML en public/).
+          VITE_GSC_VERIFICATION: ${{ vars.VITE_GSC_VERIFICATION }}
 
       - name: SPA fallback (copy index.html to 404.html)
         run: cp dist/index.html dist/404.html
