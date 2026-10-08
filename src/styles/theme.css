@@ -884,12 +884,23 @@ svg.grabbing {
   border-bottom-color: var(--accent);
 }
 
+/* ---- Jerga (solapa Jerga): cuadrícula de mini-gráficos por palabra ---- */
+.slang-grid {
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+.slang-people {
+  margin-top: 4px;
+}
+
 /* ---- Responsive ---- */
 @media (max-width: 860px) {
   .layout {
     grid-template-columns: 1fr;
   }
   .aux-row {
+    grid-template-columns: 1fr;
+  }
+  .slang-grid {
     grid-template-columns: 1fr;
   }
 }

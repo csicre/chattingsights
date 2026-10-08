@@ -196,6 +196,15 @@ export const en: TranslationSchema = {
     response: 'Response times',
     initiative: 'Initiative',
     words: 'Word search',
+    slang: 'Slang',
+  },
+  slang: {
+    personLabel: 'Person',
+    hint: 'The 5 most characteristic words of each person compared to the rest of the conversation (fillers, nicknames, signature expressions). Each chart shows when they use them over time.',
+    noData: 'Not enough messages to detect slang.',
+    noWords: 'We could not find words distinctive enough for {{person}} in the current selection.',
+    chartInfo: 'Trend of “{{word}}” used by this person. Total in selection: {{count}} times.',
+    unit: 'occurrences',
   },
   wordSearch: {
     title: 'Search expression',

@@ -25,9 +25,10 @@ import { InitiativeBars } from './InitiativeBars';
 import { ResponseBars } from './ResponseBars';
 import { EmojiBars } from './EmojiBars';
 import { WordSearchPanel } from './WordSearchPanel';
+import { SlangPanel } from './SlangPanel';
 import { Tabs, type TabItem } from './Tabs';
 
-type TabId = 'general' | 'schedule' | 'emojis' | 'response' | 'initiative' | 'words';
+type TabId = 'general' | 'schedule' | 'emojis' | 'response' | 'initiative' | 'words' | 'slang';
 
 /** Opciones de hueco de inactividad (minutos) para separar conversaciones. */
 const INITIATIVE_GAP_OPTIONS = [30, 60, 120, 240] as const;
@@ -110,6 +111,7 @@ export function Dashboard() {
     { id: 'response', label: t('tabs.response') },
     { id: 'initiative', label: t('tabs.initiative') },
     { id: 'words', label: t('tabs.words') },
+    { id: 'slang', label: t('tabs.slang') },
   ];
 
   // KPIs de la solapa General.
@@ -272,6 +274,8 @@ export function Dashboard() {
             timeGroup={timeGroup}
             split={split}
           />
+        ) : tab === 'slang' ? (
+          <SlangPanel points={points} timeGroup={timeGroup} lang={lang} />
         ) : (
           <>
             <div className="group">

@@ -22,6 +22,8 @@ import type {
 } from './types';
 import { charCount, countMatches, extractEmojis, findMatches, tokenize } from './text';
 import type { MatchRange } from './text';
+import { getLexicon } from './lexicons';
+import type { SupportedLanguage } from './types';
 
 function pad(n: number): string {
   return n < 10 ? `0${n}` : `${n}`;
@@ -385,6 +387,119 @@ export function buildWordMatches(
     totalMessages: all.length,
     totalOccurrences,
   };
+}
+
+/* ============================================================================
+   Jerga: palabras "especiales" propias de cada persona.
+
+   Para cada autor seleccionamos las palabras que MÁS lo caracterizan frente al
+   resto del chat: términos que esa persona usa mucho pero los demás apenas. Es
+   una medida de "distintividad" al estilo TF-IDF, no un simple top de palabras.
+   ========================================================================== */
+
+/** Una palabra característica de un autor con su conteo y score de distintividad. */
+export interface SlangWord {
+  /** La palabra (en minúsculas, ya normalizada por el tokenizador). */
+  word: string;
+  /** Nº de veces que ESTE autor usa la palabra. */
+  count: number;
+  /**
+   * Score de distintividad (mayor = más propio de este autor). Combina lo mucho
+   * que la usa este autor con lo poco que la usan los demás.
+   */
+  score: number;
+}
+
+/** Jerga de un autor: sus palabras más características. */
+export interface AuthorSlang {
+  author: string;
+  words: SlangWord[];
+}
+
+/** Longitud mínima de palabra para considerarla jerga (filtra ruido corto). */
+const SLANG_MIN_WORD_LENGTH = 3;
+/** Veces mínimas que el autor debe haber usado la palabra para que cuente. */
+const SLANG_MIN_COUNT = 3;
+
+/**
+ * Calcula la "jerga" de cada autor: sus `perAuthor` palabras más distintivas.
+ *
+ * Para cada palabra y autor comparamos la frecuencia relativa con la que ese
+ * autor la usa frente a la frecuencia relativa en el resto de participantes.
+ * El score prioriza palabras muy usadas por el autor y poco (o nada) por los
+ * demás, de modo que afloran muletillas, apodos y expresiones propias en lugar
+ * de palabras comunes a toda la conversación.
+ *
+ * Se excluyen stopwords del idioma, palabras demasiado cortas y las que el autor
+ * usa muy pocas veces (ruido). Determinista y en el cliente.
+ *
+ * @param lang idioma para elegir el conjunto de stopwords.
+ * @param perAuthor nº de palabras por persona (por defecto 5).
+ */
+export function computeSlang(
+  points: MessagePoint[],
+  lang: SupportedLanguage,
+  perAuthor = 5,
+): AuthorSlang[] {
+  const stopwords = getLexicon(lang).stopwords;
+
+  // Conteo de cada palabra por autor y total global.
+  const byAuthor = new Map<string, Map<string, number>>();
+  const totalByAuthor = new Map<string, number>();
+  const globalCount = new Map<string, number>();
+  let grandTotal = 0;
+
+  for (const p of points) {
+    let authorMap = byAuthor.get(p.author);
+    if (!authorMap) {
+      authorMap = new Map();
+      byAuthor.set(p.author, authorMap);
+    }
+    for (const tok of tokenize(p.text)) {
+      if (tok.length < SLANG_MIN_WORD_LENGTH) continue;
+      if (stopwords.has(tok)) continue;
+      // Descarta "palabras" puramente numéricas.
+      if (/^\d+$/.test(tok)) continue;
+
+      authorMap.set(tok, (authorMap.get(tok) ?? 0) + 1);
+      totalByAuthor.set(p.author, (totalByAuthor.get(p.author) ?? 0) + 1);
+      globalCount.set(tok, (globalCount.get(tok) ?? 0) + 1);
+      grandTotal += 1;
+    }
+  }
+
+  const result: AuthorSlang[] = [];
+
+  for (const [author, authorMap] of byAuthor) {
+    const authorTotal = totalByAuthor.get(author) ?? 0;
+    const othersTotal = grandTotal - authorTotal;
+
+    const scored: SlangWord[] = [];
+    for (const [word, count] of authorMap) {
+      if (count < SLANG_MIN_COUNT) continue;
+
+      // Frecuencia relativa en este autor vs. en los demás.
+      const authorFreq = authorTotal ? count / authorTotal : 0;
+      const othersCount = (globalCount.get(word) ?? 0) - count;
+      const othersFreq = othersTotal ? othersCount / othersTotal : 0;
+
+      // Ratio de distintividad: cuánto más la usa este autor que el resto.
+      // El suavizado evita divisiones por cero y premia la exclusividad total.
+      const distinctiveness = authorFreq / (othersFreq + authorFreq * 0.15 + 1e-9);
+
+      // Pondera por el volumen de uso (log) para no encumbrar rarezas de 3 usos
+      // frente a muletillas realmente frecuentes.
+      const score = distinctiveness * Math.log2(count + 1);
+
+      scored.push({ word, count, score });
+    }
+
+    scored.sort((a, b) => b.score - a.score || b.count - a.count || a.word.localeCompare(b.word));
+    result.push({ author, words: scored.slice(0, perAuthor) });
+  }
+
+  result.sort((a, b) => a.author.localeCompare(b.author));
+  return result;
 }
 
 /**

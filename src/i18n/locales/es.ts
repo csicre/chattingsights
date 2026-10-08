@@ -194,6 +194,15 @@ export const es = {
     response: 'Tiempos de respuesta',
     initiative: 'Iniciativa',
     words: 'Buscador de palabras',
+    slang: 'Jerga',
+  },
+  slang: {
+    personLabel: 'Persona',
+    hint: 'Las 5 palabras más características de cada persona frente al resto de la conversación (muletillas, apodos, expresiones propias). Cada gráfico muestra cuándo las usa a lo largo del tiempo.',
+    noData: 'No hay suficientes mensajes para detectar jerga.',
+    noWords: 'No encontramos palabras lo bastante características de {{person}} en la selección actual.',
+    chartInfo: 'Evolución del uso de «{{word}}» por esta persona. Total en la selección: {{count}} veces.',
+    unit: 'apariciones',
   },
   wordSearch: {
     title: 'Buscar expresión',
